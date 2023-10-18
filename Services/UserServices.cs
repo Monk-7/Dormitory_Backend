@@ -9,7 +9,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Security.Principal;
 
-
 namespace DormitoryAPI.Services
 {
     public class UserService
@@ -21,28 +20,18 @@ namespace DormitoryAPI.Services
             _context = context;
             _configuration = configuration;
         }
-
-        private void createPasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+        public static string createHashPassword(string password)
         {
-            using (var hmac = new HMACSHA512())
-            {
-                passwordSalt = new byte[64]; // สร้างข้อมูลสุ่มความยาว 64 ไบต์
-                using (var rngCsp = new RNGCryptoServiceProvider())
-                {
-                    rngCsp.GetBytes(passwordSalt); // เติมค่าสุ่มลงใน passwordSalt
-                }
+            string salt = BCrypt.Net.BCrypt.GenerateSalt(12); // คุณสามารถปรับตัวปรับตัวประมาณ (cost factor) (12) เพื่อทำให้มันช้าลง
+            string hashedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
+            return hashedPassword;
+        }
 
-                passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
-        private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+        public static bool verifyPassword(string password, string hashedPassword)
         {
-            using (var hmac = new HMACSHA512(passwordSalt))
-            {
-                var loginHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-                return loginHash.SequenceEqual(passwordHash);
-            }
+            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
+
         private TokenValidationParameters GetTokenValidationParameters()
         {
             return new TokenValidationParameters()
@@ -99,7 +88,8 @@ namespace DormitoryAPI.Services
         }
         public async Task<UserNoPW> registerAsync(UserRegister user)
         {
-            createPasswordHash(user.password, out byte[] passwordHash, out byte[] passwordSalt);
+            //createPasswordHash(user.password, out byte[] passwordHash, out byte[] passwordSalt);
+            string passwordHash = createHashPassword(user.password);
             var _existUser = await _context.User.FirstOrDefaultAsync(_user => _user.email == user.email);
 
             if (_existUser != null)
@@ -110,7 +100,6 @@ namespace DormitoryAPI.Services
 
             _user.email = user.email;
             _user.passwordHash = passwordHash;
-            _user.passwordSalt = passwordSalt;
             _user.name = user.name;
             _user.lastname = user.lastname;
             _user.role = user.role;
@@ -123,6 +112,30 @@ namespace DormitoryAPI.Services
             _user.token = token;
             UserNoPW _resUser = (UserNoPW) _user;
             return _resUser;
+        }
+        public async Task<string> loginAsync(UserLogin user)
+        {
+            var _user = await _context.User.SingleOrDefaultAsync(u => u.email == user.email);
+            if (_user == null)
+            {
+                return "UsernameFalse";
+            }
+            if (verifyPassword(user.password, _user.passwordHash))
+            {
+                string token = CreateToken(_user);
+                var _userUpdate = _context.User.FirstOrDefault(u => u.Id == _user.Id);
+                if (user != null)
+                {
+                    _userUpdate.token = token;
+                    _context.SaveChanges();
+                }
+                
+                return token;
+            }
+            else
+            {
+                return "false";
+            }
         }
 
         public List<User> GetAllUser()

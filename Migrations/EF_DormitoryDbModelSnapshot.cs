@@ -43,11 +43,9 @@ namespace DormitoryAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<byte[]>("passwordHash")
-                        .HasColumnType("bytea");
-
-                    b.Property<byte[]>("passwordSalt")
-                        .HasColumnType("bytea");
+                    b.Property<string>("passwordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("phonenumber")
                         .HasColumnType("integer");

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DormitoryAPI.Migrations
 {
     [DbContext(typeof(EF_DormitoryDb))]
-    [Migration("20231018095328_InitialCreate")]
+    [Migration("20231018134642_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -46,11 +46,9 @@ namespace DormitoryAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<byte[]>("passwordHash")
-                        .HasColumnType("bytea");
-
-                    b.Property<byte[]>("passwordSalt")
-                        .HasColumnType("bytea");
+                    b.Property<string>("passwordHash")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("phonenumber")
                         .HasColumnType("integer");

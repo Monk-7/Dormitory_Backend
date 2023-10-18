@@ -78,3 +78,4 @@ D:\CEPP\DormitoryAPI\bin\Debug\net7.0\Mono.TextTemplating.dll
 D:\CEPP\DormitoryAPI\bin\Debug\net7.0\System.CodeDom.dll
 D:\CEPP\DormitoryAPI\bin\Debug\net7.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 D:\CEPP\DormitoryAPI\bin\Debug\net7.0\Newtonsoft.Json.dll
+D:\CEPP\DormitoryAPI\bin\Debug\net7.0\BCrypt.Net.dll

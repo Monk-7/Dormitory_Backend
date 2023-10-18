@@ -12,8 +12,7 @@ namespace DormitoryAPI.Models
         public string? IdRoom { get; set; }
         public string name { get; set; } = null!;
         public string lastname { get; set; } = null!;
-        public byte[]? passwordHash { get; set; } = null!;
-        public byte[]? passwordSalt { get; set; } = null!;
+        public string passwordHash { get; set; } = null!;
         public string email { get; set; } = null!;
         public string role { get; set; } = null!;
         public int phonenumber { get; set; } = 0!;
@@ -36,7 +35,6 @@ namespace DormitoryAPI.Models
     {        
         public string email { get; set; } = null!;
         public string password { get; set; } = null!;
-        public string? confirmPassword  { get; set; } = null!;
     }
     
 }

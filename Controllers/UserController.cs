@@ -32,6 +32,20 @@ namespace DormitoryAPI.Controllers
             }
             return CreatedAtAction("register", new { user = _user, token = _user.token });
         }
+        [HttpPost("login")]
+        public async Task<ActionResult<string>> Login([FromBody]UserLogin req)
+        {
+            var token = await _db.loginAsync(req);
+            if (token == "false")
+            {
+                return BadRequest(new { message = "Wrong Password!" });
+            }
+            else if (token == "UsernameFalse")
+            {
+                return BadRequest(new { message = "Wrong Username!" });
+            }
+            return Ok(new { token = token });
+        }
         [HttpGet("Get")]
         public IActionResult Get()
         {
