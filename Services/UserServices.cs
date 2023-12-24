@@ -97,7 +97,8 @@ namespace DormitoryAPI.Services
                 return null;
             }
             var _user = new User();
-
+            
+            _user.Id = Guid.NewGuid();
             _user.email = user.email;
             _user.passwordHash = passwordHash;
             _user.name = user.name;
@@ -155,7 +156,6 @@ namespace DormitoryAPI.Services
             }));
             return response;
         }
-
         
     }   
     

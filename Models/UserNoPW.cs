@@ -13,7 +13,7 @@ namespace DormitoryAPI.Models
         public string lastname { get; set; } = null!;
         public string email { get; set; } = null!;
         public string role { get; set; } = null!;
-        public int phonenumber { get; set; } = 0!;
+        public string phonenumber { get; set; } = null!;
         public string? token { get; set; } = null!;
     }
 }

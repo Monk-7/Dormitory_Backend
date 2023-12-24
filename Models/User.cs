@@ -7,7 +7,6 @@ namespace DormitoryAPI.Models
     public class User
     {
         [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
         public string? IdRoom { get; set; }
         public string name { get; set; } = null!;
@@ -15,7 +14,7 @@ namespace DormitoryAPI.Models
         public string passwordHash { get; set; } = null!;
         public string email { get; set; } = null!;
         public string role { get; set; } = null!;
-        public int phonenumber { get; set; } = 0!;
+        public string phonenumber { get; set; } = null!;
         public string? token { get; set; } = null!;
     }
     public class UserRegister
@@ -28,7 +27,7 @@ namespace DormitoryAPI.Models
         public string password { get; set; } = null!;
         public string? confirmPassword  { get; set; } = null!;
         public string role { get; set; } = null!;
-        public int phonenumber { get; set; } = 0!;
+        public string phonenumber { get; set; } = null!;
         public string? token { get; set; } = null!;
     }
     public class UserLogin

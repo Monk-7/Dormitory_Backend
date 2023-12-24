@@ -1,9 +1,7 @@
 using DormitoryAPI.Models;
 using DormitoryAPI.EFcore;
 using Microsoft.AspNetCore.Mvc;
-using DormitoryAPI.Model;
 using DormitoryAPI.Services;
-using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace DormitoryAPI.Controllers
 {
