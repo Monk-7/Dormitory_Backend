@@ -1,6 +1,7 @@
 
 using DormitoryAPI.EFcore;
 using DormitoryAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualBasic;
 
 namespace DormitoryAPI.Services
@@ -30,29 +31,38 @@ namespace DormitoryAPI.Services
             return response;
         }
         
-        public List<Room> GetRoomsByIdUser(string idUser)
+        public async Task<List<Room>> GetRoomsByIdUser(string idUser)
         {
             // ค้นหา Building ที่มี idDormitory ตรงกับที่ระบุ
-            var dormitory = _context.Dormitory.FirstOrDefault(u => u.idOwner == idUser);
-            var building = _context.Building.FirstOrDefault(b => b.idDormitory == dormitory.idDormitory.ToString());
+            var dormitory = await _context.Dormitory.FirstOrDefaultAsync(u => u.idOwner == idUser);
 
-            if (building != null)
+            if (dormitory != null)
             {
-                // ค้นหา Room ที่มี idBuilding ตรงกับ id ของ Building ที่พบ
-                var rooms = _context.Room.Where(r => r.idBuilding == building.idBuilding.ToString()).ToList();
+                // ค้นหา Building ที่มี idDormitory ตรงกับที่ระบุ
+                var building = await _context.Building.FirstOrDefaultAsync(b => b.idDormitory == dormitory.idDormitory.ToString());
 
-                if (rooms.Any())
+                if (building != null)
                 {
-                    return rooms.Select(room => new Room
+                    // ค้นหา Room ที่มี idBuilding ตรงกับ id ของ Building ที่พบ
+                    var rooms = await _context.Room.Where(r => r.idBuilding == building.idBuilding.ToString()).ToListAsync();
+
+                    if (rooms.Any())
                     {
-                        idRoom = room.idRoom,
-                        idBuilding = room.idBuilding,
-                        roomName = room.roomName,
-                        furniturePrice = room.furniturePrice,
-                        internetPrice = room.internetPrice,
-                        parkingPrice = room.parkingPrice,
-                        timesTamp = room.timesTamp
-                    }).ToList();
+                        // เลือกข้อมูลที่ต้องการส่งคืนจาก Room
+                        // var roomInfos = rooms.Select(room => new Room
+                        // {
+                        //     idRoom = room.idRoom,
+                        //     roomName = room.roomName,
+                        //     furniturePrice = room.furniturePrice,
+                        //     internetPrice = room.internetPrice,
+                        //     parkingPrice = room.parkingPrice,
+                        //     timesTamp = room.timesTamp
+                        // }).ToList();
+
+                        // return roomInfos;
+
+                        return rooms;
+                    }
                 }
             }
 
@@ -63,7 +73,7 @@ namespace DormitoryAPI.Services
         {
             var _room = new Room();
             
-            _room.idRoom = Guid.NewGuid();
+            _room.idRoom = Guid.NewGuid().ToString();
             _room.idBuilding = room.idBuilding;
             _room.roomName = room.roomName;
             _room.furniturePrice = room.furniturePrice;
@@ -78,38 +88,35 @@ namespace DormitoryAPI.Services
         }
         
         // Tenant
-        public Room GetRoomById(Guid idUser)
+        public async Task<Room> GetRoomById(string idUser)
         {
-            var user = _context.User.FirstOrDefault(u => u.Id == idUser);
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == idUser);
 
             // ตรวจสอบว่า user ไม่เป็น null ก่อนที่จะดำเนินการต่อ
             if (user != null)
             {
-                // ตรวจสอบว่า user.IdRoom มีค่าและเป็นรูปแบบของ Guid ที่ถูกต้องหรือไม่
-                if (Guid.TryParse(user.IdRoom, out Guid idRoomGuid))
-                {
-                    var room = _context.Room.FirstOrDefault(r => r.idRoom == idRoomGuid);
+                var room = await _context.Room.FirstOrDefaultAsync(r => r.idRoom == user.IdRoom);
 
-                    // ตรวจสอบว่า room ไม่เป็น null ก่อนที่จะสร้าง Room ใหม่
-                    if (room != null)
+                // ตรวจสอบว่า room ไม่เป็น null ก่อนที่จะสร้าง Room ใหม่
+                if (room != null)
+                {
+                    return new Room
                     {
-                        return new Room
-                        {
-                            idRoom = room.idRoom,
-                            idBuilding = room.idBuilding,
-                            roomName = room.roomName,
-                            furniturePrice = room.furniturePrice,
-                            internetPrice = room.internetPrice,
-                            parkingPrice = room.parkingPrice,
-                            timesTamp = room.timesTamp
-                        };
-                    }
+                        idRoom = room.idRoom,
+                        idBuilding = room.idBuilding,
+                        roomName = room.roomName,
+                        furniturePrice = room.furniturePrice,
+                        internetPrice = room.internetPrice,
+                        parkingPrice = room.parkingPrice,
+                        timesTamp = room.timesTamp
+                    };
                 }
+                
             }
 
             return null; // หรือ throw 404 Not Found หรือ แบบอื่น ๆ ตามความเหมาะสม
         }
-        
+
     }   
     
 }

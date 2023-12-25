@@ -7,7 +7,7 @@ namespace DormitoryAPI.Models
     public class User
     {
         [Key]
-        public Guid Id { get; set; }
+        public string? Id { get; set; }
         public string? IdRoom { get; set; }
         public string name { get; set; } = null!;
         public string lastname { get; set; } = null!;
@@ -16,6 +16,8 @@ namespace DormitoryAPI.Models
         public string role { get; set; } = null!;
         public string phonenumber { get; set; } = null!;
         public string? token { get; set; } = null!;
+
+        public DateTimeOffset? timesTamp { get; set; }
     }
     public class UserRegister
     {        
@@ -35,5 +37,5 @@ namespace DormitoryAPI.Models
         public string email { get; set; } = null!;
         public string password { get; set; } = null!;
     }
-    
+
 }

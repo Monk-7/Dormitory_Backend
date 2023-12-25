@@ -6,7 +6,7 @@ namespace DormitoryAPI.Models
     public class Building
     {
         [Key]
-        public Guid idBuilding { get; set; }
+        public string? idBuilding { get; set; }
         public string? idDormitory { get; set; }
         public string buildingName { get; set; } = null!;
         public int waterPrice { get; set; } = 0!;

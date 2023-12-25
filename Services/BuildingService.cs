@@ -31,7 +31,7 @@ namespace DormitoryAPI.Services
         {
             var _building = new Building();
 
-            _building.idBuilding = Guid.NewGuid();
+            _building.idBuilding = Guid.NewGuid().ToString();
             _building.idDormitory = building.idDormitory;
             _building.buildingName = building.buildingName;
             _building.waterPrice = building.waterPrice;
@@ -47,7 +47,7 @@ namespace DormitoryAPI.Services
         {
             var _building = new Building
             {
-                idBuilding = Guid.NewGuid(),
+                idBuilding = Guid.NewGuid().ToString(),
                 idDormitory = building.idDormitory,
                 buildingName = building.buildingName,
                 waterPrice = building.waterPrice,
@@ -62,7 +62,7 @@ namespace DormitoryAPI.Services
                 .SelectMany(floor => Enumerable.Range(1, building.buildingRoom)
                     .Select(roomNumber => new Room
                     {
-                        idRoom = Guid.NewGuid(),
+                        idRoom = Guid.NewGuid().ToString(),
                         idBuilding = _building.idBuilding.ToString(),
                         roomName = $"{(floor) * 1000 + roomNumber}".PadLeft(building.buildingRoomNumberlength, '0'),
                         furniturePrice = building.furniturePrice,

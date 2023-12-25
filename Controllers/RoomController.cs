@@ -46,7 +46,7 @@ namespace DormitoryAPI.Controllers
         // Tenant
         [HttpGet("getroom/{id}")]
 
-        public IActionResult GetRoom(Guid id)
+        public IActionResult GetRoom(string id)
         {
             Room data = _db.GetRoomById(id);
 

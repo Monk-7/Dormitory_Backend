@@ -33,7 +33,7 @@ namespace DormitoryAPI.Services
         {
             var _dormitory = new Dormitory();
 
-            _dormitory.idDormitory = Guid.NewGuid();
+            _dormitory.idDormitory = Guid.NewGuid().ToString();
             _dormitory.idOwner = dormitory.idOwner;
             _dormitory.dormitoryName = dormitory.dormitoryName;
             _dormitory.address = dormitory.address;

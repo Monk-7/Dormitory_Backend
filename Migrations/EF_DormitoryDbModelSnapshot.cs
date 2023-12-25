@@ -24,9 +24,8 @@ namespace DormitoryAPI.Migrations
 
             modelBuilder.Entity("DormitoryAPI.Models.Building", b =>
                 {
-                    b.Property<Guid>("idBuilding")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("idBuilding")
+                        .HasColumnType("text");
 
                     b.Property<string>("buildingName")
                         .IsRequired()
@@ -51,9 +50,8 @@ namespace DormitoryAPI.Migrations
 
             modelBuilder.Entity("DormitoryAPI.Models.Dormitory", b =>
                 {
-                    b.Property<Guid>("idDormitory")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("idDormitory")
+                        .HasColumnType("text");
 
                     b.Property<string>("address")
                         .IsRequired()
@@ -84,9 +82,8 @@ namespace DormitoryAPI.Migrations
 
             modelBuilder.Entity("DormitoryAPI.Models.Room", b =>
                 {
-                    b.Property<Guid>("idRoom")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("idRoom")
+                        .HasColumnType("text");
 
                     b.Property<int>("furniturePrice")
                         .HasColumnType("integer");
@@ -114,9 +111,8 @@ namespace DormitoryAPI.Migrations
 
             modelBuilder.Entity("DormitoryAPI.Models.User", b =>
                 {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
 
                     b.Property<string>("IdRoom")
                         .HasColumnType("text");
@@ -144,6 +140,9 @@ namespace DormitoryAPI.Migrations
                     b.Property<string>("role")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("timesTamp")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("token")
                         .HasColumnType("text");

@@ -15,7 +15,7 @@ namespace DormitoryAPI.Migrations
                 name: "Building",
                 columns: table => new
                 {
-                    idBuilding = table.Column<Guid>(type: "uuid", nullable: false),
+                    idBuilding = table.Column<string>(type: "text", nullable: false),
                     idDormitory = table.Column<string>(type: "text", nullable: true),
                     buildingName = table.Column<string>(type: "text", nullable: false),
                     waterPrice = table.Column<int>(type: "integer", nullable: false),
@@ -31,7 +31,7 @@ namespace DormitoryAPI.Migrations
                 name: "Dormitory",
                 columns: table => new
                 {
-                    idDormitory = table.Column<Guid>(type: "uuid", nullable: false),
+                    idDormitory = table.Column<string>(type: "text", nullable: false),
                     idOwner = table.Column<string>(type: "text", nullable: true),
                     dormitoryName = table.Column<string>(type: "text", nullable: false),
                     address = table.Column<string>(type: "text", nullable: false),
@@ -48,7 +48,7 @@ namespace DormitoryAPI.Migrations
                 name: "Room",
                 columns: table => new
                 {
-                    idRoom = table.Column<Guid>(type: "uuid", nullable: false),
+                    idRoom = table.Column<string>(type: "text", nullable: false),
                     idBuilding = table.Column<string>(type: "text", nullable: true),
                     roomName = table.Column<string>(type: "text", nullable: false),
                     furniturePrice = table.Column<int>(type: "integer", nullable: false),
@@ -65,7 +65,7 @@ namespace DormitoryAPI.Migrations
                 name: "User",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Id = table.Column<string>(type: "text", nullable: false),
                     IdRoom = table.Column<string>(type: "text", nullable: true),
                     name = table.Column<string>(type: "text", nullable: false),
                     lastname = table.Column<string>(type: "text", nullable: false),
@@ -73,7 +73,8 @@ namespace DormitoryAPI.Migrations
                     email = table.Column<string>(type: "text", nullable: false),
                     role = table.Column<string>(type: "text", nullable: false),
                     phonenumber = table.Column<string>(type: "text", nullable: false),
-                    token = table.Column<string>(type: "text", nullable: true)
+                    token = table.Column<string>(type: "text", nullable: true),
+                    timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {

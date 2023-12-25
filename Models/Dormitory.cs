@@ -6,7 +6,7 @@ namespace DormitoryAPI.Models
     public class Dormitory
     {
         [Key]
-        public Guid idDormitory{ get; set; }
+        public string? idDormitory{ get; set; }
         public string? idOwner { get; set; }
         public string dormitoryName { get; set; } = null!;
         public string address { get; set; } = null!;

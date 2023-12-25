@@ -48,9 +48,17 @@ namespace DormitoryAPI.Controllers
         public IActionResult Get()
         {
             
-            IEnumerable<User> data = _db.GetAllUser();
+            IEnumerable<User> data = _db.getAllUser();
             return Ok(new{data = data});
             
+        }
+
+        [HttpPut("updateIdRoom/{idUser}")]
+        public async Task<ActionResult<string>> updateIdRoom(string idUser, string idRoom)
+        {
+            
+            var data = await _db.updateIdRoom(idUser,idRoom);
+            return Ok(new{data = data});
         }
 
     }

@@ -45,15 +45,10 @@ namespace DormitoryAPI.Services
         }
         private string CreateToken(User user)
         {
-            string id = "";
-            if (user.Id != Guid.Empty)
-            {
-                id = user.Id.ToString();
-            }
-
+            
             List<Claim> claims = new List<Claim>{
                 new Claim("role", user.role),
-                new Claim("userID", id)
+                new Claim("userID", user.Id)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["AppSettings:JWTSecretKey"]));
@@ -98,13 +93,14 @@ namespace DormitoryAPI.Services
             }
             var _user = new User();
             
-            _user.Id = Guid.NewGuid();
+            _user.Id = Guid.NewGuid().ToString();
             _user.email = user.email;
             _user.passwordHash = passwordHash;
             _user.name = user.name;
             _user.lastname = user.lastname;
             _user.role = user.role;
             _user.phonenumber = user.phonenumber;
+            _user.timesTamp = DateTimeOffset.UtcNow;
 
             await _context.User.AddAsync(_user);
             await _context.SaveChangesAsync();
@@ -139,7 +135,7 @@ namespace DormitoryAPI.Services
             }
         }
 
-        public List<User> GetAllUser()
+        public List<User> getAllUser()
         {
             List<User> response = new List<User>();
             var dataList = _context.User.ToList();
@@ -156,7 +152,30 @@ namespace DormitoryAPI.Services
             }));
             return response;
         }
-        
+
+
+        public async Task<UserNoPW> updateIdRoom(string idUser, string idRoom)
+        {
+            // Use FirstOrDefaultAsync and await to wait for the data retrieval to complete
+            var _user = await _context.User.FirstOrDefaultAsync(user => user.Id == idUser);
+
+            if (_user != null)
+            {
+                // Update the idRoom with the provided value
+                _user.IdRoom = idRoom;
+
+                // Save the update to the database
+                await _context.SaveChangesAsync();
+
+                // Convert the result to UserNoPW
+                UserNoPW _resUser = (UserNoPW) _user;
+
+                return _resUser;
+            }
+
+            return null; // If the user is not found
+        }
+
     }   
     
 }
