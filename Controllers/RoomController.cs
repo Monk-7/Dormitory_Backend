@@ -6,7 +6,7 @@ using DormitoryAPI.Services;
 namespace DormitoryAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     public class RoomController : ControllerBase
     {
         private RoomService _db;
@@ -24,14 +24,12 @@ namespace DormitoryAPI.Controllers
             return Ok(new{data = data});
             
         }
-        [HttpGet("getrooms/{id}")]
+        [HttpGet("GetAllRoom/{id}")]
 
-        public IActionResult GetRooms(string id)
+        public async Task<IActionResult> GetRooms(string id)
         {
-            
-            IEnumerable<Room> data = _db.GetRoomsByIdUser(id);
-            return Ok(new{data = data});
-            
+            List<Room> data = await _db.GetRoomsByIdUser(id);
+            return Ok(new { data = data });
         }
 
         [HttpPost("Post")]
@@ -44,20 +42,20 @@ namespace DormitoryAPI.Controllers
         }
 
         // Tenant
-        [HttpGet("getroom/{id}")]
+        [HttpGet("GetOneRoom/{id}")]
 
-        public IActionResult GetRoom(string id)
+        public async Task<IActionResult> GetRoom(string id)
         {
-            Room data = _db.GetRoomById(id);
+            Room data = await _db.GetRoomById(id);
 
             if (data != null)
             {
                 return Ok(new { data = data });
             }
 
-            // หากไม่พบ Room สำหรับ id ที่กำหนด
             return NotFound();
         }
+
     }
         
 }

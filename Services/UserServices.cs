@@ -48,7 +48,9 @@ namespace DormitoryAPI.Services
             
             List<Claim> claims = new List<Claim>{
                 new Claim("role", user.role),
-                new Claim("userID", user.Id)
+                new Claim("userID", user.Id),
+                new Claim("firstname", user.name),
+                new Claim("lastname", user.lastname)
             };
 
             var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(_configuration["AppSettings:JWTSecretKey"]));
@@ -174,6 +176,30 @@ namespace DormitoryAPI.Services
             }
 
             return null; // If the user is not found
+        }
+
+        public async Task<UserNoPW> getUserById(string userId)
+        {
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user != null)
+            {
+                UserNoPW _resUser = new UserNoPW
+                {
+                    Id = user.Id,
+                    IdRoom = user.IdRoom,
+                    name = user.name,
+                    lastname = user.lastname,
+                    email = user.email,
+                    role = user.role,
+                    phonenumber = user.phonenumber,
+                    token = user.token
+                };
+
+                return _resUser;
+            }
+
+            return null;
         }
 
     }   

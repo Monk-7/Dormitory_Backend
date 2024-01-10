@@ -6,7 +6,7 @@ using DormitoryAPI.Services;
 namespace DormitoryAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     public class DormitoryController : ControllerBase
     {
         private DormitoryService _db;

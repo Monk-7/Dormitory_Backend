@@ -9,6 +9,7 @@ namespace DormitoryAPI.Models
         public string? idRoom { get; set; }
         public string? idBuilding { get; set; }
         public string roomName { get; set; } = null!;
+        public int roomPrice { get; set; } = 0!; 
         public int furniturePrice { get; set; } = 0!;
         public int internetPrice { get; set; } = 0!;
         public int parkingPrice { get; set; } = 0!;

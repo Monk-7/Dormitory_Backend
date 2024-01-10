@@ -6,7 +6,7 @@ using DormitoryAPI.Services;
 namespace DormitoryAPI.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     public class BuildingController : ControllerBase
     {
         private BuildingService _db;
@@ -39,7 +39,7 @@ namespace DormitoryAPI.Controllers
         public async Task<ActionResult<string>> PostCreateBuildingAndRoom([FromBody]CreateBuilding req)
         {
             
-            var _building = await _db.CreateBuildingAndRoom(req);
+            var _building = await _db.CreateBuildingAndAllRooms(req);
             return Ok(new { Building = _building});
             
         }

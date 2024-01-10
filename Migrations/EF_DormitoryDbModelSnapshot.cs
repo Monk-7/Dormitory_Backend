@@ -101,6 +101,9 @@ namespace DormitoryAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("roomPrice")
+                        .HasColumnType("integer");
+
                     b.Property<DateTimeOffset?>("timesTamp")
                         .HasColumnType("timestamp with time zone");
 

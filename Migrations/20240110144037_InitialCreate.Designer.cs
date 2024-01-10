@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DormitoryAPI.Migrations
 {
     [DbContext(typeof(EF_DormitoryDb))]
-    [Migration("20231224233452_InitialCreate")]
+    [Migration("20240110144037_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -103,6 +103,9 @@ namespace DormitoryAPI.Migrations
                     b.Property<string>("roomName")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("roomPrice")
+                        .HasColumnType("integer");
 
                     b.Property<DateTimeOffset?>("timesTamp")
                         .HasColumnType("timestamp with time zone");

@@ -43,7 +43,7 @@ namespace DormitoryAPI.Services
             
             return _building;
         }
-        public async Task<Building> CreateBuildingAndRoom(CreateBuilding building)
+        public async Task<Building> CreateBuildingAndAllRooms(CreateBuilding building)
         {
             var _building = new Building
             {
@@ -64,7 +64,8 @@ namespace DormitoryAPI.Services
                     {
                         idRoom = Guid.NewGuid().ToString(),
                         idBuilding = _building.idBuilding.ToString(),
-                        roomName = $"{(floor) * 1000 + roomNumber}".PadLeft(building.buildingRoomNumberlength, '0'),
+                        roomName = $"{(floor) * 100 + roomNumber}".PadLeft(building.buildingRoomNumberlength, '0'),
+                        roomPrice = building.roomPrice,
                         furniturePrice = building.furniturePrice,
                         internetPrice = building.internetPrice,
                         parkingPrice = building.parkingPrice,

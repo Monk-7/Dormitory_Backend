@@ -51,6 +51,7 @@ namespace DormitoryAPI.Migrations
                     idRoom = table.Column<string>(type: "text", nullable: false),
                     idBuilding = table.Column<string>(type: "text", nullable: true),
                     roomName = table.Column<string>(type: "text", nullable: false),
+                    roomPrice = table.Column<int>(type: "integer", nullable: false),
                     furniturePrice = table.Column<int>(type: "integer", nullable: false),
                     internetPrice = table.Column<int>(type: "integer", nullable: false),
                     parkingPrice = table.Column<int>(type: "integer", nullable: false),
