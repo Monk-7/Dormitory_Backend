@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -25,6 +26,23 @@ namespace DormitoryAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Building", x => x.idBuilding);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Community",
+                columns: table => new
+                {
+                    idCommunity = table.Column<string>(type: "text", nullable: false),
+                    idUser = table.Column<string>(type: "text", nullable: true),
+                    idDormitory = table.Column<string>(type: "text", nullable: true),
+                    category = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    details = table.Column<string>(type: "text", nullable: false),
+                    timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Community", x => x.idCommunity);
                 });
 
             migrationBuilder.CreateTable(
@@ -90,7 +108,13 @@ namespace DormitoryAPI.Migrations
                 name: "Building");
 
             migrationBuilder.DropTable(
+                name: "Community");
+
+            migrationBuilder.DropTable(
                 name: "Dormitory");
+
+            migrationBuilder.DropTable(
+                name: "Meter");
 
             migrationBuilder.DropTable(
                 name: "Room");

@@ -13,8 +13,9 @@ namespace DormitoryAPI.Models
         public int furniturePrice { get; set; } = 0!;
         public int internetPrice { get; set; } = 0!;
         public int parkingPrice { get; set; } = 0!;
-        
         public DateTimeOffset? timesTamp { get; set; }
 
     }
+
+    
 }

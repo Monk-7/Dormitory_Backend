@@ -39,7 +39,7 @@ namespace DormitoryAPI.Services
             if (dormitory != null)
             {
                 // ค้นหา Building ที่มี idDormitory ตรงกับที่ระบุ
-                var building = await _context.Building.FirstOrDefaultAsync(b => b.idDormitory == dormitory.idDormitory.ToString());
+                var building = await _context.Building.FirstOrDefaultAsync(b => b.idDormitory == dormitory.idDormitory);
 
                 if (building != null)
                 {
@@ -48,7 +48,7 @@ namespace DormitoryAPI.Services
 
                     if (rooms.Any())
                     {
-                        // เลือกข้อมูลที่ต้องการส่งคืนจาก Room
+                        //เลือกข้อมูลที่ต้องการส่งคืนจาก Room
                         // var roomInfos = rooms.Select(room => new Room
                         // {
                         //     idRoom = room.idRoom,
@@ -56,10 +56,12 @@ namespace DormitoryAPI.Services
                         //     furniturePrice = room.furniturePrice,
                         //     internetPrice = room.internetPrice,
                         //     parkingPrice = room.parkingPrice,
-                        //     timesTamp = room.timesTamp
+                        //     timesTamp = room.timesTamp,
+                        //     roomFloor = room.roomFloor,
+                        //     roomPrice = room.roomPrice
                         // }).ToList();
 
-                        // return roomInfos;
+                        //return roomInfos;
 
                         return rooms;
                     }

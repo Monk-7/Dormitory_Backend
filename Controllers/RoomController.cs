@@ -29,7 +29,7 @@ namespace DormitoryAPI.Controllers
         public async Task<IActionResult> GetRooms(string id)
         {
             List<Room> data = await _db.GetRoomsByIdUser(id);
-            return Ok(new { data = data });
+            return Ok(data);
         }
 
         [HttpPost("Post")]

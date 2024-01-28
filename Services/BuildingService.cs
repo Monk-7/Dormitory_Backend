@@ -1,6 +1,7 @@
 
 using DormitoryAPI.EFcore;
 using DormitoryAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DormitoryAPI.Services
 {
@@ -45,10 +46,13 @@ namespace DormitoryAPI.Services
         }
         public async Task<Building> CreateBuildingAndAllRooms(CreateBuilding building)
         {
+            
+            var _dormitory = await _context.Dormitory.FirstOrDefaultAsync(u => u.idOwner == building.idUser);
+
             var _building = new Building
             {
                 idBuilding = Guid.NewGuid().ToString(),
-                idDormitory = building.idDormitory,
+                idDormitory = _dormitory.idDormitory,
                 buildingName = building.buildingName,
                 waterPrice = building.waterPrice,
                 electricalPrice = building.electricalPrice,
@@ -58,9 +62,9 @@ namespace DormitoryAPI.Services
             await _context.Building.AddAsync(_building);
             await _context.SaveChangesAsync();  // บันทึกข้อมูลอาคารก่อน
 
-            var rooms = Enumerable.Range(1, building.buildingFloor)
-                .SelectMany(floor => Enumerable.Range(1, building.buildingRoom)
-                    .Select(roomNumber => new Room
+           var rooms = Enumerable.Range(1, building.buildingFloor)
+            .SelectMany(floor => Enumerable.Range(1, building.buildingRoom)
+                .Select(roomNumber => new Room
                     {
                         idRoom = Guid.NewGuid().ToString(),
                         idBuilding = _building.idBuilding.ToString(),
