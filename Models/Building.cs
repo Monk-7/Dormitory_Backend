@@ -23,14 +23,15 @@ namespace DormitoryAPI.Models
         public int waterPrice { get; set; } = 0!;
         public int electricalPrice { get; set; } = 0!; 
         public DateTimeOffset? timesTamp { get; set; }
-        public List<Room> roomAll  { get; set; } = new List<Room>();
+        public List<RoomName> roomAll  { get; set; } = new List<RoomName>();
         
     }
 
-    public class CreateBuilding
+    public class CreateBuildingTEST
     {
         
         public string? idUser { get; set; }
+        public string? idDormitory { get; set; }
         public string buildingName { get; set; } = null!;
         public int buildingRoomNumberlength { get; set; } = 0!;
         public int buildingFloor { get; set; } = 0!;
@@ -42,6 +43,14 @@ namespace DormitoryAPI.Models
         public int internetPrice { get; set; } = 0!;
         public int parkingPrice { get; set; } = 0!;
 
+    }
+
+    public class CreateBuilding
+    {
+        public string? idDormitory { get; set; }
+        public string buildingName { get; set; } = null!;
+        public int waterPrice { get; set; } = 0!;
+        public int electricalPrice { get; set; } = 0!; 
     }
 
 

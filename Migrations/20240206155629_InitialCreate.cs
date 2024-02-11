@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
@@ -29,6 +28,20 @@ namespace DormitoryAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CodeRoom",
+                columns: table => new
+                {
+                    idCodeRoom = table.Column<string>(type: "text", nullable: false),
+                    idRoom = table.Column<string>(type: "text", nullable: true),
+                    codeRoom = table.Column<string>(type: "text", nullable: false),
+                    timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CodeRoom", x => x.idCodeRoom);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Community",
                 columns: table => new
                 {
@@ -46,20 +59,36 @@ namespace DormitoryAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Dormitory",
+                name: "Meter",
                 columns: table => new
                 {
-                    idDormitory = table.Column<string>(type: "text", nullable: false),
-                    idOwner = table.Column<string>(type: "text", nullable: true),
+                    idMeter = table.Column<string>(type: "text", nullable: false),
+                    idDormitory = table.Column<string>(type: "text", nullable: true),
+                    idBuilding = table.Column<string>(type: "text", nullable: true),
                     dormitoryName = table.Column<string>(type: "text", nullable: false),
-                    address = table.Column<string>(type: "text", nullable: false),
-                    phoneNumber = table.Column<string>(type: "text", nullable: false),
-                    email = table.Column<string>(type: "text", nullable: false),
+                    buildingName = table.Column<string>(type: "text", nullable: false),
                     timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dormitory", x => x.idDormitory);
+                    table.PrimaryKey("PK_Meter", x => x.idMeter);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Problem",
+                columns: table => new
+                {
+                    idProblem = table.Column<string>(type: "text", nullable: false),
+                    idRoom = table.Column<string>(type: "text", nullable: true),
+                    idUser = table.Column<string>(type: "text", nullable: true),
+                    category = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    details = table.Column<string>(type: "text", nullable: false),
+                    timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Problem", x => x.idProblem);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +97,7 @@ namespace DormitoryAPI.Migrations
                 {
                     idRoom = table.Column<string>(type: "text", nullable: false),
                     idBuilding = table.Column<string>(type: "text", nullable: true),
-                    roomName = table.Column<string>(type: "text", nullable: false),
+                    roomName = table.Column<int>(type: "integer", nullable: false),
                     roomPrice = table.Column<int>(type: "integer", nullable: false),
                     furniturePrice = table.Column<int>(type: "integer", nullable: false),
                     internetPrice = table.Column<int>(type: "integer", nullable: false),
@@ -99,6 +128,32 @@ namespace DormitoryAPI.Migrations
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "MeterRoom",
+                columns: table => new
+                {
+                    idMeterRoom = table.Column<string>(type: "text", nullable: false),
+                    idRoom = table.Column<string>(type: "text", nullable: false),
+                    roomName = table.Column<int>(type: "integer", nullable: false),
+                    electricity = table.Column<int>(type: "integer", nullable: true),
+                    water = table.Column<int>(type: "integer", nullable: true),
+                    MeteridMeter = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MeterRoom", x => x.idMeterRoom);
+                    table.ForeignKey(
+                        name: "FK_MeterRoom_Meter_MeteridMeter",
+                        column: x => x.MeteridMeter,
+                        principalTable: "Meter",
+                        principalColumn: "idMeter");
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeterRoom_MeteridMeter",
+                table: "MeterRoom",
+                column: "MeteridMeter");
         }
 
         /// <inheritdoc />
@@ -108,19 +163,31 @@ namespace DormitoryAPI.Migrations
                 name: "Building");
 
             migrationBuilder.DropTable(
+                name: "CodeRoom");
+
+            migrationBuilder.DropTable(
                 name: "Community");
 
             migrationBuilder.DropTable(
                 name: "Dormitory");
 
             migrationBuilder.DropTable(
-                name: "Meter");
+                name: "Invoice");
+
+            migrationBuilder.DropTable(
+                name: "MeterRoom");
+
+            migrationBuilder.DropTable(
+                name: "Problem");
 
             migrationBuilder.DropTable(
                 name: "Room");
 
             migrationBuilder.DropTable(
                 name: "User");
+
+            migrationBuilder.DropTable(
+                name: "Meter");
         }
     }
 }

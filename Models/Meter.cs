@@ -9,6 +9,8 @@ namespace DormitoryAPI.Models
         [Key]
         public string? idMeter{ get; set; }
         public string? idDormitory { get; set; }
+        public string? idBuilding { get; set; }
+        public string dormitoryName { get; set; } = null!;
         public string buildingName { get; set; } = null!;
         public List<MeterRoom> meterRoomAll { get; set; } = new List<MeterRoom>();
         public DateTimeOffset? timesTamp { get; set; }
@@ -18,10 +20,9 @@ namespace DormitoryAPI.Models
     public class MeterRoom
     {
         [Key]
-        // [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string idMeterRoom { get; set; } = null!;
         public string idRoom { get; set; } = null!;
-        public string roomName { get; set; } = null!;
+        public int  roomName { get; set; } = 0!;
         public int? electricity { get; set; }
         public int? water { get; set; }
     }
@@ -44,7 +45,9 @@ namespace DormitoryAPI.Models
     {
         public string? idMeter{ get; set; }
         public string? idDormitory { get; set; }
+        public string? idBuilding { get; set; }
         public string buildingName { get; set; } = null!;
+        public string dormitoryName { get; set; } = null!;
         public List<MeterPrevRoom> meterRoomAll { get; set; } = new List<MeterPrevRoom>();
         public DateTimeOffset? timesTamp { get; set; }
     }
@@ -53,11 +56,17 @@ namespace DormitoryAPI.Models
     {
         public string idMeterRoom { get; set; } = null!;
         public string idRoom { get; set; } = null!;
-        public string roomName { get; set; } = null!;
+        public int  roomName { get; set; } = 0!;
         public int? electricity { get; set; }
         public int? water { get; set; }
         public int? electricityPrev { get; set; }
         public int? waterPrev { get; set; }
+    }
+
+    public class MeterExcel
+    {
+        public string idMeterRoom { get; set; } = null!;
+
     }
 
 }

@@ -3,6 +3,7 @@ using System;
 using DormitoryAPI.EFcore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DormitoryAPI.Migrations
 {
     [DbContext(typeof(EF_DormitoryDb))]
-    partial class EF_DormitoryDbModelSnapshot : ModelSnapshot
+    [Migration("20240208222937_CreateDorm")]
+    partial class CreateDorm
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,55 +144,6 @@ namespace DormitoryAPI.Migrations
                     b.HasKey("idDormitory");
 
                     b.ToTable("Dormitory");
-                });
-
-            modelBuilder.Entity("DormitoryAPI.Models.Invoice", b =>
-                {
-                    b.Property<string>("idInvoice")
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("dueDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("electricityPrice")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("furniturePrice")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("idRoom")
-                        .HasColumnType("text");
-
-                    b.Property<int>("internetPrice")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("other")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("parkingPrice")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("roomName")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("roomPrice")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("status")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTimeOffset?>("timesTamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("total")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("waterPrice")
-                        .HasColumnType("integer");
-
-                    b.HasKey("idInvoice");
-
-                    b.ToTable("Invoice");
                 });
 
             modelBuilder.Entity("DormitoryAPI.Models.Meter", b =>

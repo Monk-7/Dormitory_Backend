@@ -80,6 +80,28 @@ namespace DormitoryAPI.Services
             
             return _community;
         }
+        public async Task<Community> CreateAnnouncement(CreateCommunity res)
+        {
+            var _community = new Community();
+            var dormitory = await _context.Dormitory.FirstOrDefaultAsync(d => d.idOwner == res.idUser);
+
+            if(dormitory != null)
+            {
+                _community.idCommunity = Guid.NewGuid().ToString();
+                _community.idUser = res.idUser;
+                _community.idDormitory = dormitory.idDormitory;
+                _community.category = res.category;
+                _community.title = res.title;
+                _community.details = res.details;
+                _community.timesTamp = DateTimeOffset.UtcNow;
+
+                await _context.Community.AddAsync(_community);
+                await _context.SaveChangesAsync();
+                
+                return _community;
+            }
+            return null;
+        }
 
         public async Task<List<GetCommunity>> GetPostPublic()
         {
@@ -120,6 +142,52 @@ namespace DormitoryAPI.Services
 
             var user = await _context.User.FirstOrDefaultAsync(u => u.Id == idUser);
 
+            if (user != null && user.role == "owner" )
+            {
+                var dormitory = await _context.Dormitory.FirstOrDefaultAsync(b => b.idOwner == user.Id);
+                _idDormitory = dormitory.idDormitory;
+            }
+            else if (user != null && user.role == "renter")
+            {
+                var room = await _context.Room.FirstOrDefaultAsync(r => r.idRoom == user.IdRoom);
+                var building = await _context.Building.FirstOrDefaultAsync(b => b.idBuilding == room.idBuilding);
+                _idDormitory = building.idDormitory;
+            }
+            var postAll = await _context.Community.Where(u => u.category == "apartment" && u.idDormitory == _idDormitory).ToListAsync();
+
+            if (postAll.Any())
+            {
+                foreach (var post in postAll)
+                {
+                    var postOne = await _context.User.FirstOrDefaultAsync(u => u.Id == post.idUser);
+                    var postItem = new GetCommunity
+                    {
+                        idCommunity = post.idCommunity,
+                        idUser = post.idUser,
+                        name = postOne.name + ' ' + postOne.lastname,
+                        category = post.category,
+                        title = post.title,
+                        details = post.details,
+                        timesTamp = post.timesTamp
+                    };
+                    postList.Add(postItem);
+                }
+                return postList;
+            }
+
+            return null; // หรือ throw 404 Not Found หรือ แบบอื่น ๆ ตามความเหมาะสม
+        }
+
+        public async Task<List<GetCommunity>> GetAnnouncement(string idUser)
+        {
+
+            var postList = new List<GetCommunity>();
+            var _community = new Community();
+
+            var _idDormitory = " ";
+
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == idUser);
+
             if (user.role == "owner" && user != null)
             {
                 var dormitory = await _context.Dormitory.FirstOrDefaultAsync(b => b.idOwner == user.Id);
@@ -131,7 +199,7 @@ namespace DormitoryAPI.Services
                 var building = await _context.Building.FirstOrDefaultAsync(b => b.idBuilding == room.idBuilding);
                 _idDormitory = building.idDormitory;
             }
-            var postAll = await _context.Community.Where(u => u.category == "apartment" && u.idDormitory == _idDormitory).ToListAsync();
+            var postAll = await _context.Community.Where(u => u.category == "announcement" && u.idDormitory == _idDormitory).ToListAsync();
 
             if (postAll.Any())
             {

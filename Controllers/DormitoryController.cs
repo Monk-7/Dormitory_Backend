@@ -24,6 +24,13 @@ namespace DormitoryAPI.Controllers
             return Ok(new{data = data});
             
         }
+        
+        [HttpGet("GetAllDormitory/{idUser}")]
+        public async Task<ActionResult<string>> GetAllDormitoryByIdUser(string idUser)
+        {
+            var data = await _db.GetAllDormitoryByIdUser(idUser);
+            return Ok(data);
+        }
 
         [HttpPost("Post")]
         public async Task<ActionResult<string>> Post([FromBody]Dormitory req)
@@ -38,18 +45,19 @@ namespace DormitoryAPI.Controllers
         public async Task<ActionResult<string>> CreateDormitory([FromBody]CreateDormitory req)
         {
             
-            var _dormitory = await _db.CreateDormitory(req);
-            return Ok(new { Dormitory = _dormitory});
+            await _db.CreateDormitory(req);
+            return Ok("CreateDormitory Successful");
             
         }
 
-
-        [HttpGet("GetDormitoryData/{idUser}")]
-        public async Task<ActionResult<string>> GetDormitoryAllBuildingAndAllRooms(string idUser)
+        [HttpDelete("DeleteDormitory/{idBuilding}")]
+        public async Task<ActionResult<string>> DeleteDormitory(string idDormitory)
         {
-            var data = await _db.GetDormitoryAndAllBuildingAndAllRooms(idUser);
-            return Ok(data);
+            
+            var status = await _db.DeleteDormitory(idDormitory);
+            return Ok(status);
         }
+      
     }
         
 }

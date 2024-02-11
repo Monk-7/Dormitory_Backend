@@ -15,36 +15,7 @@ namespace DormitoryAPI.Controllers
         {
             _db = new UserService(context,configuration);
         }
-        [HttpPost("Register")]
-        public async Task<ActionResult<string>> Register([FromBody] UserRegister request)
-        {
-
-            if (request.password != request.confirmPassword)
-            {
-                return BadRequest(new { message = "รหัสผ่านไม่ตรงกัน" });
-            }
-            var _user = await _db.registerAsync(request);
-            if (_user == null)
-            {
-                return BadRequest(new { message = "มีชื่อผู้ใช้นี้อยู่แล้ว" });
-            }
-            return CreatedAtAction("register", new { user = _user, token = _user.token });
-        }
-        [HttpPost("Login")]
-        public async Task<ActionResult<string>> Login([FromBody]UserLogin req)
-        {
-            var token = await _db.loginAsync(req);
-            if (token == "false")
-            {
-                return BadRequest(new { message = "รหัสผ่านไม่ถูกต้อง" });
-            }
-            else if (token == "UsernameFalse")
-            {
-                return BadRequest(new { message = "ชื่อผู้ใช้ไม่ถูกต้อง" });
-            }
-            return Ok(new { token = token });
-        }
-
+        
         [HttpGet("ValiDateToken")]
         public async Task<ActionResult<string>> validateToken()
         {
@@ -83,13 +54,58 @@ namespace DormitoryAPI.Controllers
             var data = await _db.getUserById(idUser);
             return Ok(data);
         }
+        [HttpGet("GetUserAllByIdroom/{idRoom}")]
+        public async Task<ActionResult<string>> getUsersByIdRoom(string idRoom)
+        {
+            var data = await _db.getUsersByRoomId(idRoom);
+            return Ok(data);
+        }
 
-        [HttpPut("UpdateIdRoom/{idUser}")]
-        public async Task<ActionResult<string>> updateIdRoom(string idUser, string idRoom)
+        [HttpPost("Register")]
+        public async Task<ActionResult<string>> Register([FromBody] UserRegister request)
+        {
+
+            if (request.password != request.confirmPassword)
+            {
+                return BadRequest(new { message = "รหัสผ่านไม่ตรงกัน" });
+            }
+            var _user = await _db.registerAsync(request);
+            if (_user == null)
+            {
+                return BadRequest(new { message = "มีชื่อผู้ใช้นี้อยู่แล้ว" });
+            }
+            return CreatedAtAction("register", new { user = _user, token = _user.token });
+        }
+        
+        [HttpPost("Login")]
+        public async Task<ActionResult<string>> Login([FromBody]UserLogin req)
+        {
+            var token = await _db.loginAsync(req);
+            if (token == "false")
+            {
+                return BadRequest(new { message = "รหัสผ่านไม่ถูกต้อง" });
+            }
+            else if (token == "UsernameFalse")
+            {
+                return BadRequest(new { message = "ชื่อผู้ใช้ไม่ถูกต้อง" });
+            }
+            return Ok(new { token = token });
+        }
+
+        [HttpPut("UpdateIdRoom")]
+        public async Task<ActionResult<string>> updateIdRoom(CodeAddRoom res)
         {
             
-            var data = await _db.updateIdRoom(idUser,idRoom);
-            return Ok(new{data = data});
+            var data = await _db.updateIdRoom(res);
+            return Ok(data);
+        }
+
+        [HttpDelete("DeleteUser/{idUser}")]
+        public async Task<ActionResult<string>> DeleteUser(string idUser)
+        {
+            
+            var status = await _db.DeleteUser(idUser);
+            return Ok(status);
         }
 
     }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DormitoryAPI.Migrations
 {
     [DbContext(typeof(EF_DormitoryDb))]
-    [Migration("20240125102620_CreateMeter")]
-    partial class CreateMeter
+    [Migration("20240206155629_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -51,6 +51,26 @@ namespace DormitoryAPI.Migrations
                     b.ToTable("Building");
                 });
 
+            modelBuilder.Entity("DormitoryAPI.Models.CodeRoom", b =>
+                {
+                    b.Property<string>("idCodeRoom")
+                        .HasColumnType("text");
+
+                    b.Property<string>("codeRoom")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("idRoom")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("timesTamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("idCodeRoom");
+
+                    b.ToTable("CodeRoom");
+                });
+
             modelBuilder.Entity("DormitoryAPI.Models.Community", b =>
                 {
                     b.Property<string>("idCommunity")
@@ -82,38 +102,6 @@ namespace DormitoryAPI.Migrations
                     b.ToTable("Community");
                 });
 
-            modelBuilder.Entity("DormitoryAPI.Models.Dormitory", b =>
-                {
-                    b.Property<string>("idDormitory")
-                        .HasColumnType("text");
-
-                    b.Property<string>("address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("dormitoryName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("idOwner")
-                        .HasColumnType("text");
-
-                    b.Property<string>("phoneNumber")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("timesTamp")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("idDormitory");
-
-                    b.ToTable("Dormitory");
-                });
-
             modelBuilder.Entity("DormitoryAPI.Models.Meter", b =>
                 {
                     b.Property<string>("idMeter")
@@ -121,6 +109,13 @@ namespace DormitoryAPI.Migrations
 
                     b.Property<string>("buildingName")
                         .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("dormitoryName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("idBuilding")
                         .HasColumnType("text");
 
                     b.Property<string>("idDormitory")
@@ -149,9 +144,8 @@ namespace DormitoryAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("roomName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("roomName")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("water")
                         .HasColumnType("integer");
@@ -161,6 +155,37 @@ namespace DormitoryAPI.Migrations
                     b.HasIndex("MeteridMeter");
 
                     b.ToTable("MeterRoom");
+                });
+
+            modelBuilder.Entity("DormitoryAPI.Models.Problem", b =>
+                {
+                    b.Property<string>("idProblem")
+                        .HasColumnType("text");
+
+                    b.Property<string>("category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("details")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("idRoom")
+                        .HasColumnType("text");
+
+                    b.Property<string>("idUser")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("timesTamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("idProblem");
+
+                    b.ToTable("Problem");
                 });
 
             modelBuilder.Entity("DormitoryAPI.Models.Room", b =>
@@ -180,9 +205,8 @@ namespace DormitoryAPI.Migrations
                     b.Property<int>("parkingPrice")
                         .HasColumnType("integer");
 
-                    b.Property<string>("roomName")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("roomName")
+                        .HasColumnType("integer");
 
                     b.Property<int>("roomPrice")
                         .HasColumnType("integer");

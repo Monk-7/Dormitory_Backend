@@ -36,12 +36,28 @@ namespace DormitoryAPI.Controllers
         }
 
         [HttpPost("CreateBuilding")]
-        public async Task<ActionResult<string>> PostCreateBuildingAndRoom([FromBody]CreateBuilding req)
+        public async Task<ActionResult<string>> CreateBuilding([FromBody]CreateBuilding req)
+        {
+            var _building = await _db.CreateBuilding(req);
+            return Ok(_building.idBuilding);
+            
+        }
+
+        [HttpGet("GetAllBuilding/{idDormitory}")]
+        public async Task<ActionResult<string>> GetAllBuildingByIdDormitory(string idDormitory)
         {
             
-            var _building = await _db.CreateBuildingAndAllRooms(req);
-            return Ok(new { Building = _building});
+            var data = await _db.GetAllBuildingByIdDormitory(idDormitory);
+            return Ok(data);
             
+        }
+
+        [HttpDelete("DeleteBuilding/{idBuilding}")]
+        public async Task<ActionResult<string>> DeleteBuilding(string idBuilding)
+        {
+            
+            var status = await _db.DeleteBuilding(idBuilding);
+            return Ok(status);
         }
     }
         

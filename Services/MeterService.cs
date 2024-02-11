@@ -47,149 +47,159 @@ namespace DormitoryAPI.Services
             var _meter = new List<GetMeter>();
             var chackTimes = DateTimeOffset.UtcNow;
             var chackTimesMonth = chackTimes.AddMonths(-1);
-            var dormitory = await _context.Dormitory.FirstOrDefaultAsync(u => u.idOwner == idUser);
-            var buildings = await _context.Building.Where(u => u.idDormitory == dormitory.idDormitory).ToListAsync();
-            var existingMeter = await _context.Meter
-                .Include(m => m.meterRoomAll)
-                .Where(m => m.idDormitory == dormitory.idDormitory
-                            && m.timesTamp.Value.Month == chackTimes.Month
-                            && m.timesTamp.Value.Year == chackTimes.Year)
-                .OrderBy(m => m.buildingName)
-                .ToListAsync();
-
-            if (existingMeter.Count != buildings.Count) 
+            var dormitorys = await _context.Dormitory.Where(u => u.idOwner == idUser).ToListAsync();
+            
+            foreach (var dormitory in dormitorys)
             {
+
+                var buildings = await _context.Building.Where(u => u.idDormitory == dormitory.idDormitory).ToListAsync();
+                var existingMeter = await _context.Meter
+                    .Include(m => m.meterRoomAll.OrderBy(room => room.roomName))
+                    .Where(m => m.idDormitory == dormitory.idDormitory
+                                && m.timesTamp.Value.Month == chackTimes.Month
+                                && m.timesTamp.Value.Year == chackTimes.Year)
+                    .OrderBy(m => m.buildingName)
+                    .ToListAsync();
+
+                if (existingMeter.Count != buildings.Count) 
+                {
+                    foreach (var building in buildings)
+                    {
+                        var existingMeterForBuilding = existingMeter.FirstOrDefault(m => m.idBuilding == building.idBuilding);
+
+                        if (existingMeterForBuilding == null)
+                        {
+                            // ถ้าไม่มี Meter สำหรับ Building นี้ในเดือนปัจจุบัน
+                            var roomsAll = await _context.Room
+                                .AsNoTracking()
+                                .Where(room => room.idBuilding == building.idBuilding)
+                                .Select(room => new MeterRoom { idRoom = room.idRoom, roomName = room.roomName })
+                                .OrderBy(room => room.roomName)
+                                .ToListAsync();
+                                
+                            if (roomsAll == null) return null;
+                            foreach (var room in roomsAll)
+                            {
+                                room.idMeterRoom = Guid.NewGuid().ToString();
+                            }
+
+                            // ดึง Meter จากเดือนก่อนหน้า (previous month)
+                            var previousMonthMeter = await _context.Meter
+                                .Include(m => m.meterRoomAll)
+                                .Where(m => m.idDormitory == dormitory.idDormitory
+                                            && m.timesTamp.Value.Month == chackTimesMonth.Month
+                                            && m.timesTamp.Value.Year == chackTimesMonth.Year
+                                            && m.buildingName == building.buildingName)
+                                .AsNoTracking()
+                                .FirstOrDefaultAsync();
+
+                            var meter = new Meter
+                            {
+                                idMeter = Guid.NewGuid().ToString(),
+                                idDormitory = dormitory.idDormitory,
+                                idBuilding = building.idBuilding,
+                                dormitoryName = dormitory.dormitoryName,
+                                buildingName = building.buildingName,
+                                meterRoomAll = roomsAll,
+                                timesTamp = DateTimeOffset.UtcNow
+                            };
+
+                            // เพิ่ม Meter ลงในฐานข้อมูล
+                            await _context.Meter.AddAsync(meter);
+                            await _context.SaveChangesAsync();
+                            existingMeter.Add(meter);
+                        }
+                    }
+                }
+                    
+                
                 foreach (var building in buildings)
                 {
-                    var existingMeterForBuilding = existingMeter.FirstOrDefault(m => m.buildingName == building.buildingName);
-
-                    if (existingMeterForBuilding == null)
-                    {
-                        // ถ้าไม่มี Meter สำหรับ Building นี้ในเดือนปัจจุบัน
-                        var roomsAll = await _context.Room
-                            .AsNoTracking()
-                            .Where(room => room.idBuilding == building.idBuilding)
-                            .Select(room => new MeterRoom { idRoom = room.idRoom, roomName = room.roomName })
-                            .OrderBy(room => EF.Property<int>(room, "roomName"))
-                            .ToListAsync();
-                            
-                        if (roomsAll == null) return null;
-                        foreach (var room in roomsAll)
-                        {
-                            room.idMeterRoom = Guid.NewGuid().ToString();
-                        }
-
-                        // ดึง Meter จากเดือนก่อนหน้า (previous month)
-                        var previousMonthMeter = await _context.Meter
-                            .Include(m => m.meterRoomAll)
-                            .Where(m => m.idDormitory == dormitory.idDormitory
-                                        && m.timesTamp.Value.Month == chackTimesMonth.Month
-                                        && m.timesTamp.Value.Year == chackTimesMonth.Year
-                                        && m.buildingName == building.buildingName)
-                            .AsNoTracking()
-                            .FirstOrDefaultAsync();
-
-                        var meter = new Meter
-                        {
-                            idMeter = Guid.NewGuid().ToString(),
-                            idDormitory = dormitory.idDormitory,
-                            buildingName = building.buildingName,
-                            meterRoomAll = roomsAll,
-                            timesTamp = DateTimeOffset.UtcNow
-                        };
-
-                        // เพิ่ม Meter ลงในฐานข้อมูล
-                        await _context.Meter.AddAsync(meter);
-                        await _context.SaveChangesAsync();
-                        existingMeter.Add(meter);
-                    }
-                }
-            }
-                
-            
-            foreach (var building in buildings)
-            {
-                var previousMonthMeter = await _context.Meter
-                    .Include(m => m.meterRoomAll)
-                    .Where(m => m.idDormitory == dormitory.idDormitory
-                                && m.timesTamp.Value.Month == chackTimesMonth.Month
-                                && m.timesTamp.Value.Year == chackTimesMonth.Year
-                                && m.buildingName == building.buildingName)
-                    .FirstOrDefaultAsync();
- 
-                if (previousMonthMeter != null)
-                {
-                    // ถ้ามี Meter ในเดือนก่อนหน้า
-
-                    foreach (var meter in existingMeter)
-                    {
-                        if(meter.buildingName == building.buildingName)
-                        {
-                            var roomsPrev = new List<MeterPrevRoom>();
-                            foreach (var room in meter.meterRoomAll)
-                            {
-                                var previousMonthRoom = previousMonthMeter.meterRoomAll.FirstOrDefault(r => r.idRoom == room.idRoom);
-
-                                var roomPrev = new MeterPrevRoom
-                                {
-                                    idMeterRoom = room.idMeterRoom,
-                                    idRoom = room.idRoom,
-                                    roomName = room.roomName,
-                                    electricity = room?.electricity,
-                                    water = room?.water,
-                                    electricityPrev = previousMonthRoom?.electricity,
-                                    waterPrev = previousMonthRoom?.water
-                                };
-
-                                roomsPrev.Add(roomPrev);
-                            }
-                            var meterPrev = new GetMeter
-                            {
-                                idMeter = meter.idMeter,
-                                idDormitory = meter.idDormitory,
-                                buildingName = meter.buildingName,
-                                meterRoomAll = roomsPrev,
-                                timesTamp = meter.timesTamp
-                            };
-                            _meter.Add(meterPrev);
-                        }
-                    }                                            
-                }
-                else
-                {
-                    
-                    var index = buildings.IndexOf(building);
-                    var roomsPrev = new List<MeterPrevRoom>();
-                    foreach (var room in existingMeter[index].meterRoomAll)
-                    {
-
-                        var roomPrev = new MeterPrevRoom
-                        {
-                            idMeterRoom = room.idMeterRoom,
-                            idRoom = room.idRoom,
-                            roomName = room.roomName,
-                            electricity = room?.electricity,
-                            water = room?.water,
-                            electricityPrev = null,
-                            waterPrev = null
-                        };
-
-                        roomsPrev.Add(roomPrev);
-                    }
-                    var meterPrev = new GetMeter
-                    {
-                        idMeter = existingMeter[index].idMeter,
-                        idDormitory = existingMeter[index].idDormitory,
-                        buildingName = existingMeter[index].buildingName,
-                        meterRoomAll = roomsPrev,
-                        timesTamp = existingMeter[index].timesTamp
-                    };
-
-                    _meter.Add(meterPrev);
-                    
-                }
-            }
+                    var previousMonthMeter = await _context.Meter
+                        .Include(m => m.meterRoomAll)
+                        .Where(m => m.idDormitory == dormitory.idDormitory
+                                    && m.timesTamp.Value.Month == chackTimesMonth.Month
+                                    && m.timesTamp.Value.Year == chackTimesMonth.Year
+                                    && m.buildingName == building.buildingName)
+                        .FirstOrDefaultAsync();
     
+                    if (previousMonthMeter != null)
+                    {
+                        // ถ้ามี Meter ในเดือนก่อนหน้า
+
+                        foreach (var meter in existingMeter)
+                        {
+                            if(meter.buildingName == building.buildingName)
+                            {
+                                var roomsPrev = new List<MeterPrevRoom>();
+                                foreach (var room in meter.meterRoomAll)
+                                {
+                                    var previousMonthRoom = previousMonthMeter.meterRoomAll.FirstOrDefault(r => r.idRoom == room.idRoom);
+
+                                    var roomPrev = new MeterPrevRoom
+                                    {
+                                        idMeterRoom = room.idMeterRoom,
+                                        idRoom = room.idRoom,
+                                        roomName = room.roomName,
+                                        electricity = room?.electricity,
+                                        water = room?.water,
+                                        electricityPrev = previousMonthRoom?.electricity,
+                                        waterPrev = previousMonthRoom?.water
+                                    };
+
+                                    roomsPrev.Add(roomPrev);
+                                }
+                                var meterPrev = new GetMeter
+                                {
+                                    idMeter = meter.idMeter,
+                                    idDormitory = meter.idDormitory,
+                                    idBuilding = meter.idBuilding,
+                                    buildingName = meter.buildingName,
+                                    dormitoryName = meter.dormitoryName,
+                                    meterRoomAll = roomsPrev,
+                                    timesTamp = meter.timesTamp
+                                };
+                                _meter.Add(meterPrev);
+                            }
+                        }                                            
+                    }
+                    else
+                    {
+                        
+                        var index = buildings.IndexOf(building);
+                        var roomsPrev = new List<MeterPrevRoom>();
+                        foreach (var room in existingMeter[index].meterRoomAll)
+                        {
+
+                            var roomPrev = new MeterPrevRoom
+                            {
+                                idMeterRoom = room.idMeterRoom,
+                                idRoom = room.idRoom,
+                                roomName = room.roomName,
+                                electricity = room?.electricity,
+                                water = room?.water,
+                                electricityPrev = null,
+                                waterPrev = null
+                            };
+
+                            roomsPrev.Add(roomPrev);
+                        }
+                        var meterPrev = new GetMeter
+                        {
+                            idMeter = existingMeter[index].idMeter,
+                            idDormitory = existingMeter[index].idDormitory,
+                            idBuilding = existingMeter[index].idBuilding,
+                            buildingName = existingMeter[index].buildingName,
+                            dormitoryName = existingMeter[index].dormitoryName,
+                            meterRoomAll = roomsPrev,
+                            timesTamp = existingMeter[index].timesTamp
+                        };
+
+                        _meter.Add(meterPrev);
+                        
+                    }
+                }
+            }
             return _meter;
         }
 
@@ -222,7 +232,7 @@ namespace DormitoryAPI.Services
             await _context.SaveChangesAsync();
             _context.ChangeTracker.Clear();
             var _meter = new List<Meter>();
-            var meterAll = await _context.Meter.Include(m => m.meterRoomAll.OrderBy(room => EF.Property<int>(room, "roomName"))).Where(u => u.idDormitory == res[0].idDormitory).ToListAsync();
+            var meterAll = await _context.Meter.Include(m => m.meterRoomAll.OrderBy(room => room.roomName)).Where(u => u.idDormitory == res[0].idDormitory).ToListAsync();
             foreach (var meter in meterAll)
             {
                 _meter.Add(meter);
@@ -239,7 +249,7 @@ namespace DormitoryAPI.Services
             var dormitory = await _context.Dormitory.FirstOrDefaultAsync(u => u.idOwner == idUser);
             var buildings = await _context.Building.Where(u => u.idDormitory == dormitory.idDormitory).ToListAsync();
             var MeterAll = await _context.Meter.Include(m => m.meterRoomAll
-                .OrderBy(room => EF.Property<int>(room, "roomName")))
+                .OrderBy(room => room.roomName))
                 .Where(u => u.idDormitory == dormitory.idDormitory && u.timesTamp.Value.Month == getTime.Month && u.timesTamp.Value.Year == getTime.Year).ToListAsync();
             if (MeterAll == null) return null;    
             foreach (var meter in MeterAll)
@@ -249,8 +259,6 @@ namespace DormitoryAPI.Services
 
             return _meter;
         }
-
-
     }   
     
 }

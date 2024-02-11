@@ -156,23 +156,23 @@ namespace DormitoryAPI.Services
         }
 
 
-        public async Task<UserNoPW> updateIdRoom(string idUser, string idRoom)
+        public async Task<UserNoPW> updateIdRoom(CodeAddRoom res)
         {
-            // Use FirstOrDefaultAsync and await to wait for the data retrieval to complete
-            var _user = await _context.User.FirstOrDefaultAsync(user => user.Id == idUser);
+           var _user = await _context.User.FirstOrDefaultAsync(user => user.Id == res.idUser);
 
             if (_user != null)
             {
-                // Update the idRoom with the provided value
-                _user.IdRoom = idRoom;
+                var _code = await _context.CodeRoom.FirstOrDefaultAsync(c => c.codeRoom == res.codeRoom);
+                if(_code != null)
+                {
+                    _user.IdRoom = _code.idRoom;
 
-                // Save the update to the database
-                await _context.SaveChangesAsync();
-
-                // Convert the result to UserNoPW
-                UserNoPW _resUser = (UserNoPW) _user;
-
-                return _resUser;
+                    _context.CodeRoom.Remove(_code);
+                    await _context.SaveChangesAsync();
+                    
+                    UserNoPW _resUser = (UserNoPW) _user;
+                    return _resUser;    
+                }      
             }
 
             return null; // If the user is not found
@@ -200,6 +200,54 @@ namespace DormitoryAPI.Services
             }
 
             return null;
+        }
+
+        public async Task<List<UserNoPW>> getUsersByRoomId(string idRoom)
+        {
+            var users = await _context.User.Where(u => u.IdRoom == idRoom).ToListAsync();
+
+            if (users != null && users.Any())
+            {
+                List<UserNoPW> _resUsers = users.Select(user => new UserNoPW
+                {
+                    Id = user.Id,
+                    IdRoom = user.IdRoom,
+                    name = user.name,
+                    lastname = user.lastname,
+                    email = user.email,
+                    role = user.role,
+                    phonenumber = user.phonenumber,
+                    token = user.token
+                }).ToList();
+
+                return _resUsers;
+            }
+
+            return new List<UserNoPW>();
+        }
+
+        public async Task<bool> DeleteUser(string userId)
+        {
+            try
+            {
+                var userToDelete = await _context.User.FindAsync(userId);
+
+                if (userToDelete == null)
+                {
+                    // User not found
+                    return false;
+                }
+
+                _context.User.Remove(userToDelete);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions (log, throw, etc.)
+                return false;
+            }
         }
 
     }   

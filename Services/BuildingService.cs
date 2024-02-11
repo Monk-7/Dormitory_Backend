@@ -44,15 +44,30 @@ namespace DormitoryAPI.Services
             
             return _building;
         }
-        public async Task<Building> CreateBuildingAndAllRooms(CreateBuilding building)
+
+        public async Task<Building> CreateBuilding(CreateBuilding building)
+        {
+            var _building = new Building();
+
+            _building.idBuilding = Guid.NewGuid().ToString();
+            _building.idDormitory = building.idDormitory;
+            _building.buildingName = building.buildingName;
+            _building.waterPrice = building.waterPrice;
+            _building.electricalPrice = building.electricalPrice;
+            _building.timesTamp = DateTimeOffset.UtcNow;
+
+            await _context.Building.AddAsync(_building);
+            await _context.SaveChangesAsync();
+            
+            return _building;
+        }
+        public async Task<Building> CreateBuildingAndAllRooms(CreateBuildingTEST building)
         {
             
-            var _dormitory = await _context.Dormitory.FirstOrDefaultAsync(u => u.idOwner == building.idUser);
-
             var _building = new Building
             {
                 idBuilding = Guid.NewGuid().ToString(),
-                idDormitory = _dormitory.idDormitory,
+                idDormitory = building.idDormitory,
                 buildingName = building.buildingName,
                 waterPrice = building.waterPrice,
                 electricalPrice = building.electricalPrice,
@@ -62,13 +77,15 @@ namespace DormitoryAPI.Services
             await _context.Building.AddAsync(_building);
             await _context.SaveChangesAsync();  // บันทึกข้อมูลอาคารก่อน
 
-           var rooms = Enumerable.Range(1, building.buildingFloor)
+            int multiplier = (int)Math.Pow(10, building.buildingRoomNumberlength - 1);
+            
+            var rooms = Enumerable.Range(1, building.buildingFloor)
             .SelectMany(floor => Enumerable.Range(1, building.buildingRoom)
                 .Select(roomNumber => new Room
                     {
                         idRoom = Guid.NewGuid().ToString(),
                         idBuilding = _building.idBuilding.ToString(),
-                        roomName = $"{(floor) * 100 + roomNumber}".PadLeft(building.buildingRoomNumberlength, '0'),
+                        roomName = (floor * multiplier) + roomNumber,
                         roomPrice = building.roomPrice,
                         furniturePrice = building.furniturePrice,
                         internetPrice = building.internetPrice,
@@ -80,6 +97,41 @@ namespace DormitoryAPI.Services
             await _context.SaveChangesAsync();  // บันทึกข้อมูลห้อง
 
             return _building;
+        }
+
+        public async Task<List<Building>> GetAllBuildingByIdDormitory(string idDormitory)
+        {
+            var buildings = await _context.Building.Where(u => u.idDormitory == idDormitory).ToListAsync();
+            if(buildings != null)
+            {
+                return buildings;
+            }
+            return null;
+            
+        }
+
+        public async Task<bool> DeleteBuilding(string idBuilding)
+        {
+            try
+            {
+                var building = await _context.Building.FindAsync(idBuilding);
+
+                if (building == null)
+                {
+                    // User not found
+                    return false;
+                }
+
+                _context.Building.Remove(building);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions (log, throw, etc.)
+                return false;
+            }
         }
     }   
     

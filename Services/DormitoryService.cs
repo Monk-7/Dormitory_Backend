@@ -2,7 +2,6 @@
 using DormitoryAPI.EFcore;
 using DormitoryAPI.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualBasic;
 
 namespace DormitoryAPI.Services
 {
@@ -56,6 +55,9 @@ namespace DormitoryAPI.Services
             _dormitory.idOwner = dormitory.idUser;
             _dormitory.dormitoryName = dormitory.dormitoryName;
             _dormitory.address = dormitory.address;
+            _dormitory.district = dormitory.district;
+            _dormitory.province = dormitory.province;
+            _dormitory.postalCode = dormitory.postalCode;
             _dormitory.phoneNumber = dormitory.phoneNumber;
             _dormitory.email = dormitory.email;
             _dormitory.timesTamp = DateTimeOffset.UtcNow;
@@ -66,53 +68,40 @@ namespace DormitoryAPI.Services
             return _dormitory;
         }
 
-        public async Task<DormitoryAllBuildingAndAllRoom> GetDormitoryAndAllBuildingAndAllRooms(string idUser)
+        public async Task<List<Dormitory>> GetAllDormitoryByIdUser(string idUser)
         {
-            var _dormitory = new DormitoryAllBuildingAndAllRoom();
-            var dormitory = await _context.Dormitory.FirstOrDefaultAsync(u => u.idOwner == idUser);
-            
-            if (dormitory != null)
+            var dormitorys = await _context.Dormitory.Where(u => u.idOwner == idUser).ToListAsync();
+
+            if (dormitorys != null)
             {
-                var buildingAll = await _context.Building
-                    .Where(r => r.idDormitory == dormitory.idDormitory)
-                    .ToListAsync();
-                
-                
-                foreach (var building in buildingAll)
-                {
-                    var roomsAll = await _context.Room
-                        .Where(room => room.idBuilding == building.idBuilding)
-                        .OrderBy(room => EF.Property<int>(room, "roomName"))
-                        .ToListAsync();
-
-                    var buildingAndAllRoom = new BuildingAndAllRoom
-                    {
-                        idBuilding = building.idBuilding,
-                        idDormitory = building.idDormitory,
-                        buildingName = building.buildingName,
-                        waterPrice = building.waterPrice,
-                        electricalPrice = building.electricalPrice,
-                        roomAll = roomsAll,
-                        timesTamp = building.timesTamp
-                    };
-
-                    _dormitory.buildingAll.Add(buildingAndAllRoom);
-                }
-                
-                // เพิ่มข้อมูลที่เหลือใน _dormitory
-                _dormitory.idDormitory = dormitory.idDormitory;
-                _dormitory.idOwner = dormitory.idOwner;
-                _dormitory.dormitoryName = dormitory.dormitoryName;
-                _dormitory.address = dormitory.address;
-                _dormitory.phoneNumber = dormitory.phoneNumber;
-                _dormitory.email = dormitory.email;
-                _dormitory.timesTamp = dormitory.timesTamp;
-
-                return _dormitory;
+                return dormitorys;
             }
 
             return null;
         }
-    }   
-    
+
+        public async Task<bool> DeleteDormitory(string idDormitory)
+        {
+            try
+            {
+                var dormitory = await _context.Dormitory.FindAsync(idDormitory);
+
+                if (dormitory == null)
+                {
+                    // User not found
+                    return false;
+                }
+
+                _context.Dormitory.Remove(dormitory);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions (log, throw, etc.)
+                return false;
+            }
+        }
+    }       
 }

@@ -20,6 +20,7 @@
           "net7.0"
         ],
         "sources": {
+          "https://api.nuget.org/v3/index.json": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -41,6 +42,14 @@
             "BCrypt.Net": {
               "target": "Package",
               "version": "[0.1.0, )"
+            },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[7.0.8, )"
+            },
+            "ExcelDataReader": {
+              "target": "Package",
+              "version": "[3.6.0, )"
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
