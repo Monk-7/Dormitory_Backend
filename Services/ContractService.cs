@@ -28,7 +28,7 @@ namespace DormitoryAPI.Services
             var _contract = new Contract{
                 idContract = Guid.NewGuid().ToString(),
                 idRoom = idRoom,
-                pdfFile = filePath,
+                pdfFileName = filePath,
                 timesTamp = DateTimeOffset.UtcNow
             };
 
@@ -47,7 +47,7 @@ namespace DormitoryAPI.Services
             // If the contract is not found, return null
             if (contract != null)
             {
-                return new FileStream(contract.pdfFile, FileMode.Open);
+                return new FileStream(contract.pdfFileName, FileMode.Open);
                 
             }
 
@@ -64,11 +64,11 @@ namespace DormitoryAPI.Services
                 
                 if (contract != null)
                 {
-                    if(!provider.TryGetContentType(contract.pdfFile,out var _ContentType))
+                    if(!provider.TryGetContentType(contract.pdfFileName,out var _ContentType))
                     {
                         _ContentType = "application/octet-stream";
                     }
-                    var _readAllBytesAsync = await File.ReadAllBytesAsync(contract.pdfFile);
+                    var _readAllBytesAsync = await File.ReadAllBytesAsync(contract.pdfFileName);
                     
                     return (_readAllBytesAsync,_ContentType,"contract");
                 }
