@@ -18,7 +18,7 @@ namespace DormitoryAPI.Services
         {
 
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(@"D:\CEPP\DormitoryAPI\files\pdf", fileName);
+            var filePath = Path.Combine(@"D:\CEPP\files\pdf", fileName);
 
         // บันทึกไฟล์ลงในเครื่องเซิร์ฟเวอร์
             using (var stream = new FileStream(filePath, FileMode.Create))
