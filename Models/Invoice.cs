@@ -12,6 +12,8 @@ namespace DormitoryAPI.Models
         public int roomPrice { get; set; } = 0!;
         public int electricityPrice { get; set; } = 0!;
         public int waterPrice { get; set; } = 0!; 
+        public int electricityUnit { get; set; } = 0!;
+        public int waterUnit { get; set; } = 0!; 
         public int furniturePrice { get; set; } = 0!;
         public int internetPrice { get; set; } = 0!;
         public int parkingPrice { get; set; } = 0!;

@@ -10,12 +10,10 @@ namespace DormitoryAPI.Controllers
     public class InvoiceController : ControllerBase
     {
         private InvoiceService _db;
-        private MeterService _db_meter;
 
         public InvoiceController(EF_DormitoryDb context)
         {
             _db = new InvoiceService(context);
-            _db_meter = new MeterService(context);
         }
 
         [HttpGet("Get")]
@@ -25,7 +23,12 @@ namespace DormitoryAPI.Controllers
             return Ok(new { data = data });
         }
 
-        
+        [HttpGet("GetInvoicesHistory/{idRoom}")]
+        public async Task<IActionResult> GetInvoicesHistory(string idRoom) 
+        {
+            var data = await _db.GetInvoicesHistory(idRoom);
+            return Ok(data);
+        }
 
         [HttpPost("Post")]
         public async Task<ActionResult<string>> PostInvoice([FromBody] Invoice req)

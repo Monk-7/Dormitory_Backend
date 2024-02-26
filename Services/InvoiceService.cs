@@ -23,6 +23,8 @@ namespace DormitoryAPI.Services
                 idRoom = row.idRoom,
                 electricityPrice = row.electricityPrice,
                 waterPrice = row.waterPrice,
+                electricityUnit = row.electricityUnit,
+                waterUnit = row.waterUnit,
                 furniturePrice = row.furniturePrice,
                 internetPrice = row.internetPrice,
                 parkingPrice = row.parkingPrice,
@@ -31,6 +33,16 @@ namespace DormitoryAPI.Services
                 timesTamp = row.timesTamp
             }));
             return response;
+        }
+        public async Task<List<Invoice>> GetInvoicesHistory(string idRoom)
+        {
+            
+            var invoiceAll = await _context.Invoice.Where(i => i.idRoom == idRoom).ToListAsync();
+            if(invoiceAll != null)
+            {
+                return invoiceAll;
+            }
+            return null;
         }
 
         public async Task<Invoice> PostInvoice(Invoice invoice)
@@ -118,23 +130,29 @@ namespace DormitoryAPI.Services
                         {
                             foreach(var meterRoom in mater.meterRoomAll)
                             {
-
                                 var _invoice = new Invoice();
                                 var room  = await _context.Room.FirstOrDefaultAsync(u => u.idRoom == meterRoom.idRoom && u.idBuilding == building.idBuilding);
-                                if(room != null)
+                                
+                                if(room != null )
                                 {
                                     var invoice = await _context.Invoice.FirstOrDefaultAsync(i => i.idRoom == room.idRoom);
+
+                                    var electricityUnit = Math.Abs((meterRoom.electricity ?? 0) - (meterRoom.electricityPrev ?? 0));
+                                    var waterUnit = Math.Abs((meterRoom.water ?? 0) - (meterRoom.waterPrev ?? 0));
+                                    var electricityPrice = electricityUnit * building.electricalPrice;
+                                    var waterPrice = waterUnit * building.waterPrice;
+
                                     if(invoice == null)
                                     {
-                                        var electricityPrice = Math.Abs((meterRoom.electricity ?? 0) - (meterRoom.electricityPrev ?? 0)) * building.electricalPrice;
-                                        var waterPrice = Math.Abs((meterRoom.water ?? 0) - (meterRoom.waterPrev ?? 0)) * building.waterPrice;
-
+                                        
                                         _invoice.idInvoice = Guid.NewGuid().ToString();
                                         _invoice.idRoom = room.idRoom;
                                         _invoice.roomName = room.roomName;
                                         _invoice.roomPrice = room.roomPrice;
                                         _invoice.electricityPrice = electricityPrice;
                                         _invoice.waterPrice = waterPrice;
+                                        _invoice.electricityUnit = electricityUnit;
+                                        _invoice.waterUnit = waterUnit;
                                         _invoice.furniturePrice = room.furniturePrice;
                                         _invoice.internetPrice = room.internetPrice;
                                         _invoice.parkingPrice = room.parkingPrice;
@@ -146,11 +164,40 @@ namespace DormitoryAPI.Services
 
                                         _invoiceAll.Add(_invoice);
                                         await _context.Invoice.AddAsync(_invoice);
+
                                     }
+                                    else if(invoice.electricityUnit != electricityUnit || invoice.waterUnit != waterUnit)
+                                    {
+                                        _context.Invoice.Remove(invoice);
+                                        await _context.SaveChangesAsync();
+
+                                        _invoice.idInvoice = Guid.NewGuid().ToString();
+                                        _invoice.idRoom = room.idRoom;
+                                        _invoice.roomName = room.roomName;
+                                        _invoice.roomPrice = room.roomPrice;
+                                        _invoice.electricityPrice = electricityPrice;
+                                        _invoice.waterPrice = waterPrice;
+                                        _invoice.electricityUnit = electricityUnit;
+                                        _invoice.waterUnit = waterUnit;
+                                        _invoice.furniturePrice = room.furniturePrice;
+                                        _invoice.internetPrice = room.internetPrice;
+                                        _invoice.parkingPrice = room.parkingPrice;
+                                        _invoice.other = room.parkingPrice;
+                                        _invoice.total = room.parkingPrice + room.roomPrice + room.furniturePrice + room.internetPrice + electricityPrice + waterPrice;
+                                        _invoice.status = false;
+                                        _invoice.dueDate = dueDate;
+                                        _invoice.timesTamp = DateTimeOffset.UtcNow;
+
+                                        _invoiceAll.Add(_invoice);
+                                        await _context.Invoice.AddAsync(_invoice);
+
+                                    }
+                                    
                                     else _invoiceAll.Add(invoice);
                                 }
                             }
                             await _context.SaveChangesAsync();
+                            
                         }
                         var _getiInvoice = new GetInvoice{
                                 idDormitory = dormitory.idDormitory,

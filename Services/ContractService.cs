@@ -18,7 +18,7 @@ namespace DormitoryAPI.Services
         {
 
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(@"D:\CEPP\DormitoryAPI\files\pdf", fileName);
+            var filePath = Path.Combine(@"D:\CEPP\files\pdf", fileName);
 
         // บันทึกไฟล์ลงในเครื่องเซิร์ฟเวอร์
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -37,22 +37,6 @@ namespace DormitoryAPI.Services
 
             return true;
                   
-        }
-
-        public async Task<FileStream> GetPdf(string idRoom)
-        {
-            // Find the contract by ID
-            var contract = await _context.Contract.FirstOrDefaultAsync(c => c.idRoom == idRoom);
-
-            // If the contract is not found, return null
-            if (contract != null)
-            {
-                return new FileStream(contract.pdfFileName, FileMode.Open);
-                
-            }
-
-            // Open the PDF file and return the FileStream
-            return null;
         }
 
         public async Task<(byte[], string, string)> GetFile(string idRoom)

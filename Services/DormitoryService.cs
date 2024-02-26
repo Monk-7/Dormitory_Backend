@@ -67,6 +67,56 @@ namespace DormitoryAPI.Services
             
             return _dormitory;
         }
+        public async Task<DetailDormitory> GetDetailDormitory(string idUser)
+        {
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == idUser);
+            if(user != null)
+            {
+                var room = await _context.Room.FirstOrDefaultAsync(r => r.idRoom == user.IdRoom);
+                if(room != null)
+                {
+                    var building = await _context.Building.FirstOrDefaultAsync(b => b.idBuilding == room.idBuilding);
+                    if(building != null)
+                    {
+                        var dormitory = await _context.Dormitory.FirstOrDefaultAsync(d => d.idDormitory == building.idDormitory);
+                        return new DetailDormitory{
+                            dormitoryName = dormitory.dormitoryName,
+                            address = dormitory.address,
+                            district = dormitory.district,
+                            province = dormitory.province,
+                            postalCode = dormitory.postalCode,
+                            phoneNumber = dormitory.phoneNumber,
+                            email = dormitory.email,
+                        };
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        public async Task<NameDormitory> GetNameDormitory(string idUser)
+        {
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == idUser);
+            if(user != null)
+            {
+                var room = await _context.Room.FirstOrDefaultAsync(r => r.idRoom == user.IdRoom);
+                if(room != null)
+                {
+                    var building = await _context.Building.FirstOrDefaultAsync(b => b.idBuilding == room.idBuilding);
+                    if(building != null)
+                    {
+                        var dormitory = await _context.Dormitory.FirstOrDefaultAsync(d => d.idDormitory == building.idDormitory);
+                        return new NameDormitory{
+                            dormitoryName = dormitory.dormitoryName,
+                            roomName = room.roomName
+                        };
+                    }
+                }
+            }
+            
+            return null;
+        }
 
         public async Task<List<Dormitory>> GetAllDormitoryByIdUser(string idUser)
         {

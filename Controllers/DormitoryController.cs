@@ -32,6 +32,20 @@ namespace DormitoryAPI.Controllers
             return Ok(data);
         }
 
+        [HttpGet("GetDetailDormitory/{idUser}")]
+        public async Task<ActionResult<string>> GetDetailDormitory(string idUser)
+        {
+            var data = await _db.GetDetailDormitory(idUser);
+            return Ok(data);
+        }
+
+        [HttpGet("GetNameDormitory/{idUser}")]
+        public async Task<ActionResult<string>> GetNameDormitory(string idUser)
+        {
+            var data = await _db.GetNameDormitory(idUser);
+            return Ok(data);
+        }
+
         [HttpPost("Post")]
         public async Task<ActionResult<string>> Post([FromBody]Dormitory req)
         {
