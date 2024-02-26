@@ -43,6 +43,21 @@ namespace DormitoryAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Comment",
+                columns: table => new
+                {
+                    idComment = table.Column<string>(type: "text", nullable: false),
+                    idCommunity = table.Column<string>(type: "text", nullable: true),
+                    idUser = table.Column<string>(type: "text", nullable: true),
+                    details = table.Column<string>(type: "text", nullable: false),
+                    timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comment", x => x.idComment);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Community",
                 columns: table => new
                 {
@@ -226,6 +241,9 @@ namespace DormitoryAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "CodeRoom");
+
+            migrationBuilder.DropTable(
+                name: "Comment");
 
             migrationBuilder.DropTable(
                 name: "Community");

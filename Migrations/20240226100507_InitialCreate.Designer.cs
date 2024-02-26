@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DormitoryAPI.Migrations
 {
     [DbContext(typeof(EF_DormitoryDb))]
-    [Migration("20240215211434_InitialCreate")]
+    [Migration("20240226100507_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -70,6 +70,29 @@ namespace DormitoryAPI.Migrations
                     b.HasKey("idCodeRoom");
 
                     b.ToTable("CodeRoom");
+                });
+
+            modelBuilder.Entity("DormitoryAPI.Models.Comment", b =>
+                {
+                    b.Property<string>("idComment")
+                        .HasColumnType("text");
+
+                    b.Property<string>("details")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("idCommunity")
+                        .HasColumnType("text");
+
+                    b.Property<string>("idUser")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("timesTamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("idComment");
+
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("DormitoryAPI.Models.Community", b =>
