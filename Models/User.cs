@@ -15,6 +15,7 @@ namespace DormitoryAPI.Models
         public string email { get; set; } = null!;
         public string role { get; set; } = null!;
         public string phonenumber { get; set; } = null!;
+        public string? profile { get; set; } = null!;
         public string? token { get; set; } = null!;
 
         public DateTimeOffset? timesTamp { get; set; }
@@ -37,5 +38,4 @@ namespace DormitoryAPI.Models
         public string email { get; set; } = null!;
         public string password { get; set; } = null!;
     }
-
 }

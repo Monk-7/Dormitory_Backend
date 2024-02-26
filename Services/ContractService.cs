@@ -39,22 +39,6 @@ namespace DormitoryAPI.Services
                   
         }
 
-        public async Task<FileStream> GetPdf(string idRoom)
-        {
-            // Find the contract by ID
-            var contract = await _context.Contract.FirstOrDefaultAsync(c => c.idRoom == idRoom);
-
-            // If the contract is not found, return null
-            if (contract != null)
-            {
-                return new FileStream(contract.pdfFileName, FileMode.Open);
-                
-            }
-
-            // Open the PDF file and return the FileStream
-            return null;
-        }
-
         public async Task<(byte[], string, string)> GetFile(string idRoom)
         {
             try

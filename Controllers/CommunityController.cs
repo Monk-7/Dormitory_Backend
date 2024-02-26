@@ -25,11 +25,26 @@ namespace DormitoryAPI.Controllers
             
         }
 
+        [HttpGet("images/{idCommunity}")]
+        public async Task<IActionResult> GetImageZip(string idCommunity)
+        {
+            
+            var memoryStream = await _db.GetImgFileZip(idCommunity);
+            return File(memoryStream, "application/zip", "images.zip");
+        }
+        [HttpGet("GetPost/{idCommunity}")]
+        public async Task<ActionResult<string>> GetPost(string idCommunity)
+        {
+            
+            var data = await _db.GetPost(idCommunity);
+            return Ok(data);
+            
+        }
         [HttpGet("GetPostPublic")]
         public async Task<ActionResult<string>> GetPostPublic()
         {
             
-            var data = await _db.GetPostPublic();
+            var data = await _db.GetPublic();
             return Ok(data);
             
         }
@@ -57,6 +72,22 @@ namespace DormitoryAPI.Controllers
             
             var _community = await _db.CreateCommunity(req);
             return Ok(_community);
+            
+        }
+
+        [HttpPost("CreatePost")]
+        public async Task<ActionResult<string>> CreatePostCommunity([FromBody]CreateCommunity req)
+        {
+            var idCommunity = await _db.CreatePostCommunity(req);
+            return Ok(idCommunity);
+            
+        }
+
+        [HttpPut("updatePost/{idCommunity}")]
+        public async Task<ActionResult<string>> updateImg([FromForm] List<IFormFile> files,string idCommunity)
+        {
+            var result = await _db.updateImg(files,idCommunity);
+            return Ok(result);
             
         }
     }

@@ -3,33 +3,32 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DormitoryAPI.Models
 {
-    public class Community
+    public class Comment
     {
         [Key]
+        public string? idComment { get; set; }
         public string? idCommunity { get; set; }
         public string? idUser { get; set; }
-        public string? idDormitory { get; set; }
-        public string category { get; set; } = null!;
         public string details { get; set; } = null!;
-        public List<string>? imgFilePath { get; set; }
         public DateTimeOffset? timesTamp { get; set; }
     }
-
-    public class CreateCommunity
+    public class CreateComment
     {
+        public string? idCommunity { get; set; }
         public string? idUser { get; set; }
-        public string category { get; set; } = null!;
         public string details { get; set; } = null!;
     }
 
-    public class GetCommunity
+    public class GetComment
     {
+        public string? idComment { get; set; }
         public string? idCommunity { get; set; }
         public string? idUser { get; set; }
         public string fullName { get; set; } = null!;
-        public string category { get; set; } = null!;
         public string details { get; set; } = null!;
         public DateTimeOffset? timesTamp { get; set; }
     }
     
 }
+
+

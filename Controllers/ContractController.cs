@@ -84,19 +84,6 @@ namespace DormitoryAPI.Controllers
             }
         }
 
-        [HttpGet("pdf/{idRoom}")]
-        public async Task<IActionResult> GetPdf(string idRoom)
-        {
-            // Call the ContractService to get the PDF file
-            var pdfStream = await _db.GetPdf(idRoom);
-            if (pdfStream == null)
-            {
-                return NotFound("Contract not found.");
-            }
-
-            return new FileStreamResult(pdfStream, "application/pdf");
-        }
-
         [HttpGet("getFilePDF/{idRoom}")]
         public async Task<IActionResult> GetFile(string idRoom)
         {

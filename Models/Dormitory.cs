@@ -32,4 +32,23 @@ namespace DormitoryAPI.Models
         public string email { get; set; } = null!;
 
     }
+
+    public class DetailDormitory
+    {
+        public string dormitoryName { get; set; } = null!;
+        public string address { get; set; } = null!;
+        public string district { get; set; } = null!;
+        public string province { get; set; } = null!;
+        public string postalCode { get; set; } = null!;
+        public string phoneNumber { get; set; } = null!;
+        public string email { get; set; } = null!;
+
+    }
+    public class NameDormitory
+    {
+        public string dormitoryName { get; set; } = null!;
+        public int roomName { get; set; } = 0!;
+
+
+    }
 }

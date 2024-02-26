@@ -47,6 +47,12 @@ namespace DormitoryAPI.Controllers
             return Ok(new{data = data});
             
         }
+        [HttpGet("getProFile/{idUser}")]
+        public async Task<IActionResult> GetImg(string idUser)
+        {
+            var result = await _db.GetImg(idUser);
+            return File(result.Item1, result.Item2, result.Item3);
+        }
 
         [HttpGet("GetUser/{idUser}")]
         public async Task<ActionResult<string>> getUserById(string idUser)
@@ -97,6 +103,13 @@ namespace DormitoryAPI.Controllers
         {
             
             var data = await _db.updateIdRoom(res);
+            return Ok(data);
+        }
+        [HttpPut("UpdateImg/{idUser}")]
+        public async Task<ActionResult<string>> updateImgUser(IFormFile file,string idUser)
+        {
+            
+            var data = await _db.updateImgUser(file,idUser);
             return Ok(data);
         }
 

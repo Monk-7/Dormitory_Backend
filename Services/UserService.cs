@@ -8,6 +8,7 @@ using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using System.Text;
 using System.Security.Principal;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace DormitoryAPI.Services
 {
@@ -82,6 +83,35 @@ namespace DormitoryAPI.Services
                 return false;
             }
             return true;
+        }
+
+        public async Task<(byte[], string, string)> GetImg(string idUser)
+        {
+            try
+            {
+                var user = await _context.User.FirstOrDefaultAsync(c => c.Id == idUser);
+                var provider = new FileExtensionContentTypeProvider();
+                
+                if (user != null)
+                {
+                    if(!provider.TryGetContentType(user.profile,out var _ContentType))
+                    {
+                        _ContentType = "application/octet-stream";
+                    }
+                    var _readAllBytesAsync = await File.ReadAllBytesAsync(user.profile);
+                    
+                    return (_readAllBytesAsync,_ContentType,"contract");
+                }
+            
+            }
+            catch(Exception ex)
+            {
+                
+                throw ex;
+            }
+
+           return(null,null,null);
+            
         }
         public async Task<UserNoPW> registerAsync(UserRegister user)
         {
@@ -177,6 +207,32 @@ namespace DormitoryAPI.Services
 
             return null; // If the user is not found
         }
+
+        public async Task<bool> updateImgUser(IFormFile file,string idUser)
+        {
+           var _user = await _context.User.FirstOrDefaultAsync(user => user.Id == idUser);
+
+            if (_user != null)
+            {
+                
+                var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
+                var filePath = Path.Combine(@"D:\CEPP\files\img", fileName);
+
+            // บันทึกไฟล์ลงในเครื่องเซิร์ฟเวอร์
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(stream);
+                }
+                _user.profile = filePath;
+                await _context.SaveChangesAsync();  // บันทึกข้อมูลห้อง
+
+                return true; 
+            }
+
+            return false; // If the user is not found
+        }
+
+        
 
         public async Task<UserNoPW> getUserById(string userId)
         {
