@@ -15,7 +15,6 @@ namespace DormitoryAPI.Models
         public string postalCode { get; set; } = null!;
         public string phoneNumber { get; set; } = null!;
         public string email { get; set; } = null!;
-
         public DateTimeOffset? timesTamp { get; set; }
 
     }
@@ -30,7 +29,6 @@ namespace DormitoryAPI.Models
         public string postalCode { get; set; } = null!;
         public string phoneNumber { get; set; } = null!;
         public string email { get; set; } = null!;
-
     }
 
     public class DetailDormitory
@@ -42,11 +40,12 @@ namespace DormitoryAPI.Models
         public string postalCode { get; set; } = null!;
         public string phoneNumber { get; set; } = null!;
         public string email { get; set; } = null!;
-
     }
+    
     public class NameDormitory
     {
         public string dormitoryName { get; set; } = null!;
+        public string idRoom { get; set; } = null!;
         public int roomName { get; set; } = 0!;
 
 

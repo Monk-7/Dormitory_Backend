@@ -20,12 +20,6 @@ namespace DormitoryAPI.Controllers
             _db = new MeterService(context);
         }
 
-        [HttpGet("Get")]
-        public IActionResult GetAllMeters()
-        {
-            IEnumerable<Meter> data = _db.GetAllMeters();
-            return Ok(new { data = data });
-        }
 
         [HttpPost("Post")]
         public async Task<ActionResult<string>> PostMeter([FromBody] Meter req)
@@ -34,7 +28,6 @@ namespace DormitoryAPI.Controllers
             return Ok(new { data = _meter });
         }
 
-        
 
         [HttpGet("GetAndCreateMeter/{idUser}")]
         public async Task<ActionResult<string>> GetAndCreateMeter(string idUser)
@@ -49,6 +42,13 @@ namespace DormitoryAPI.Controllers
             var data = await _db.GetPrevMeter(idUser);
             return Ok(data);
         }
+        
+        [HttpGet("GetMeter/{idUser}")]
+        public async Task<ActionResult<string>> GetMeter(string idUser)
+        {
+            var data = await _db.GetMeter(idUser);
+            return Ok(data);
+        }
 
         [HttpPut("UpdateMeter")]
         public async Task<IActionResult> UpdateMeter([FromBody] List<MeterUpdate> res)
@@ -59,35 +59,18 @@ namespace DormitoryAPI.Controllers
 
 
         [HttpPost("UploadFile")]
-        public IActionResult UploadFile(IFormFile file)
+        public async Task<ActionResult<string>> updateImg(IFormFile file)
         {
-            try
-            {
-                if (file == null || file.Length == 0)
-                {
-                    return BadRequest("Invalid file");
-                }
+            var result = await _db.UpdateAddFile(file);
+            return Ok(result);
+            
+        }
 
-                // ใช้ MemoryStream เพื่อเปิด ExcelPackage จากไฟล์ที่อัปโหลด
-                using (var stream = new MemoryStream())
-                {
-                    file.CopyTo(stream);
-                    stream.Position = 0; // ตั้งค่าตำแหน่งให้เป็น 0 เพื่ออ่านจากต้นไฟล์
-
-                    using (var package = new ExcelPackage(stream))
-                    {
-                        var worksheet = package.Workbook.Worksheets.FirstOrDefault();
-
-                        Console.WriteLine(worksheet.Cells[1, 1].Value);
-
-                        return Ok("Excel file read successfully");
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Error reading Excel file: {ex.Message}");
-            }
+        [HttpGet("ExportFile/{idUser}")]
+        public async Task<ActionResult<string>> ExportFile(string idUser)
+        {
+            var result = await _db.ExportFile(idUser);
+            return File(result.Item1, result.Item2, result.Item3);   
         }
     }
 }

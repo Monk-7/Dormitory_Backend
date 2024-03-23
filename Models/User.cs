@@ -38,4 +38,14 @@ namespace DormitoryAPI.Models
         public string email { get; set; } = null!;
         public string password { get; set; } = null!;
     }
+
+    public class EditProfile
+    {        
+        public string idUser { get; set; } = null!;
+        public string name { get; set; } = null!;
+        public string lastname { get; set; } = null!;
+        public string email { get; set; } = null!;
+        public string phonenumber { get; set; } = null!;
+        public string password { get; set; } = null!;
+    }
 }

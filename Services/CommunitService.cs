@@ -32,7 +32,8 @@ namespace DormitoryAPI.Services
                         if (File.Exists(imgFilePath))
                         {
                             // อ่านข้อมูลจากไฟล์ภาพและเพิ่มเข้าไปในไฟล์ zip
-                            var entryName = Path.GetFileName(imgFilePath);
+                            var basePath = Directory.GetCurrentDirectory();
+                            var entryName = Path.GetFileName(Path.Combine(basePath, imgFilePath));
                             var entry = archive.CreateEntry(entryName);
 
                             using (var entryStream = entry.Open())
@@ -59,7 +60,9 @@ namespace DormitoryAPI.Services
             {
                 if(!file.ContentType.Contains("image")) return null;    
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(@"D:\CEPP\files\img", fileName);
+                var basePath = Directory.GetCurrentDirectory();
+                var fileDirectory = Path.Combine("files","img", fileName);
+                var filePath = Path.Combine(basePath,"files","img", fileName);
 
                 // บันทึกไฟล์ลงในเครื่องเซิร์ฟเวอร์
                 using (var stream = new FileStream(filePath, FileMode.Create))
@@ -68,7 +71,7 @@ namespace DormitoryAPI.Services
                 }
 
                 // เพิ่มชื่อไฟล์ลงใน List ของชื่อไฟล์
-                filePaths.Add(filePath);
+                filePaths.Add(fileDirectory);
             }
 
             // คืนค่า List ของชื่อไฟล์ที่ถูกสร้าง
@@ -163,16 +166,16 @@ namespace DormitoryAPI.Services
             else if (user.role == "renter" && user != null)
             {
                 var room = await _context.Room.FirstOrDefaultAsync(r => r.idRoom == user.IdRoom);
-                var building = await _context.Building.FirstOrDefaultAsync(b => b.idBuilding == room.idBuilding);
-                if(res.category == "public" && building == null){
+                
+                if(res.category == "public" && room == null){
                     _idDormitory = "";
                 }
                 else
                 {
+                    var building = await _context.Building.FirstOrDefaultAsync(b => b.idBuilding == room.idBuilding);
                     _idDormitory = building.idDormitory;
                 }
             }
-            
             
             _community.idCommunity = Guid.NewGuid().ToString();
             _community.idUser = res.idUser;
@@ -273,53 +276,28 @@ namespace DormitoryAPI.Services
                 _idDormitory = building.idDormitory;
             }
             var postAll = await _context.Community.Where(u => u.category == "apartment" && u.idDormitory == _idDormitory).OrderByDescending(c => c.timesTamp).Select(c => c.idCommunity).ToListAsync();
-
             return postAll; // หรือ throw 404 Not Found หรือ แบบอื่น ๆ ตามความเหมาะสม
         }
 
-        public async Task<List<GetCommunity>> GetAnnouncement(string idUser)
+        public async Task<List<string>> GetAnnouncement(string idUser)
         {
-
-            var postList = new List<GetCommunity>();
-            var _community = new Community();
-
             var _idDormitory = " ";
 
             var user = await _context.User.FirstOrDefaultAsync(u => u.Id == idUser);
 
-            if (user.role == "owner" && user != null)
+            if (user != null && user.role == "owner" )
             {
                 var dormitory = await _context.Dormitory.FirstOrDefaultAsync(b => b.idOwner == user.Id);
                 _idDormitory = dormitory.idDormitory;
             }
-            else if (user.role == "renter" && user != null)
+            else if (user != null && user.role == "renter")
             {
                 var room = await _context.Room.FirstOrDefaultAsync(r => r.idRoom == user.IdRoom);
                 var building = await _context.Building.FirstOrDefaultAsync(b => b.idBuilding == room.idBuilding);
                 _idDormitory = building.idDormitory;
             }
-            var postAll = await _context.Community.Where(u => u.category == "announcement" && u.idDormitory == _idDormitory).ToListAsync();
-
-            if (postAll.Any())
-            {
-                foreach (var post in postAll)
-                {
-                    var postOne = await _context.User.FirstOrDefaultAsync(u => u.Id == post.idUser);
-                    var postItem = new GetCommunity
-                    {
-                        idCommunity = post.idCommunity,
-                        idUser = post.idUser,
-                        category = post.category,
-                        details = post.details,
-                        timesTamp = post.timesTamp
-                    };
-                    postList.Add(postItem);
-                }
-                return postList;
-            }
-
-            return null; // หรือ throw 404 Not Found หรือ แบบอื่น ๆ ตามความเหมาะสม
+            var postAll = await _context.Community.Where(u => u.category == "announcement" && u.idDormitory == _idDormitory).OrderByDescending(c => c.timesTamp).Select(c => c.idCommunity).ToListAsync();
+            return postAll; // หรือ throw 404 Not Found หรือ แบบอื่น ๆ ตามความเหมาะสม
         }
     }   
-    
 }

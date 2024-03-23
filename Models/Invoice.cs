@@ -20,6 +20,7 @@ namespace DormitoryAPI.Models
         public int other { get; set; } = 0!;
         public int total { get; set; } = 0!;
         public bool status { get; set; } = false!;
+        public bool statusShow { get; set; } = false!;
         public DateTimeOffset? dueDate { get; set; }
         public DateTimeOffset? timesTamp { get; set; }
         
@@ -27,7 +28,6 @@ namespace DormitoryAPI.Models
 
     public class CreateInvoice
     {
-        
         public string idUser { get; set; } = null!;
         public List<GetMeter> meterAll { get; set; } = new List<GetMeter>();
         public DateTimeOffset? dueDate { get; set; }
@@ -36,12 +36,13 @@ namespace DormitoryAPI.Models
 
     public class GetInvoice
     {
-        
         public string? idDormitory { get; set; }
         public string? idBuilding { get; set; }
         public string dormitoryName { get; set; } = null!;
         public string buildingName { get; set; } = null!;
         public List<Invoice> invoiceAll { get; set; } = new List<Invoice>();
- 
     }
+
+    
+
 }

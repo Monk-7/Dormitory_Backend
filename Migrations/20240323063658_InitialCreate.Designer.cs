@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DormitoryAPI.Migrations
 {
     [DbContext(typeof(EF_DormitoryDb))]
-    [Migration("20240226100507_InitialCreate")]
+    [Migration("20240323063658_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -228,6 +228,9 @@ namespace DormitoryAPI.Migrations
                     b.Property<bool>("status")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("statusShow")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset?>("timesTamp")
                         .HasColumnType("timestamp with time zone");
 
@@ -298,6 +301,37 @@ namespace DormitoryAPI.Migrations
                     b.HasIndex("MeteridMeter");
 
                     b.ToTable("MeterRoom");
+                });
+
+            modelBuilder.Entity("DormitoryAPI.Models.Notify", b =>
+                {
+                    b.Property<string>("idNotify")
+                        .HasColumnType("text");
+
+                    b.Property<string>("category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("details")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("idUser")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("status")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset?>("timesTamp")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("idNotify");
+
+                    b.ToTable("Notify");
                 });
 
             modelBuilder.Entity("DormitoryAPI.Models.Problem", b =>

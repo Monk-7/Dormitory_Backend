@@ -126,6 +126,7 @@ namespace DormitoryAPI.Migrations
                     other = table.Column<int>(type: "integer", nullable: false),
                     total = table.Column<int>(type: "integer", nullable: false),
                     status = table.Column<bool>(type: "boolean", nullable: false),
+                    statusShow = table.Column<bool>(type: "boolean", nullable: false),
                     dueDate = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
                     timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
                 },
@@ -148,6 +149,23 @@ namespace DormitoryAPI.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Meter", x => x.idMeter);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notify",
+                columns: table => new
+                {
+                    idNotify = table.Column<string>(type: "text", nullable: false),
+                    idUser = table.Column<string>(type: "text", nullable: true),
+                    category = table.Column<string>(type: "text", nullable: false),
+                    title = table.Column<string>(type: "text", nullable: false),
+                    details = table.Column<string>(type: "text", nullable: false),
+                    status = table.Column<bool>(type: "boolean", nullable: false),
+                    timesTamp = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notify", x => x.idNotify);
                 });
 
             migrationBuilder.CreateTable(
@@ -259,6 +277,9 @@ namespace DormitoryAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "MeterRoom");
+
+            migrationBuilder.DropTable(
+                name: "Notify");
 
             migrationBuilder.DropTable(
                 name: "Problem");

@@ -12,6 +12,7 @@ namespace DormitoryAPI.EFcore
         public DbSet<User> User {get; set;}
         public DbSet<Room> Room {get; set;}
         public DbSet<Meter> Meter {get; set;}
+        public DbSet<Notify> Notify {get; set;}
         public DbSet<Invoice> Invoice {get; set;}
         public DbSet<Problem> Problem {get; set;}
         public DbSet<Comment> Comment {get; set;}

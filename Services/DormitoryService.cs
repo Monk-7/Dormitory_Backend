@@ -95,6 +95,26 @@ namespace DormitoryAPI.Services
             return null;
         }
 
+        public async Task<DetailDormitory> GetDetailDormitoryById(string idDormitory)
+        {
+           
+            var dormitory = await _context.Dormitory.FirstOrDefaultAsync(d => d.idDormitory == idDormitory);
+            if(dormitory != null) {
+                return new DetailDormitory{
+                    dormitoryName = dormitory.dormitoryName,
+                    address = dormitory.address,
+                    district = dormitory.district,
+                    province = dormitory.province,
+                    postalCode = dormitory.postalCode,
+                    phoneNumber = dormitory.phoneNumber,
+                    email = dormitory.email,
+                };
+            }        
+            return null;
+        }
+
+        
+
         public async Task<NameDormitory> GetNameDormitory(string idUser)
         {
             var user = await _context.User.FirstOrDefaultAsync(u => u.Id == idUser);
@@ -109,6 +129,7 @@ namespace DormitoryAPI.Services
                         var dormitory = await _context.Dormitory.FirstOrDefaultAsync(d => d.idDormitory == building.idDormitory);
                         return new NameDormitory{
                             dormitoryName = dormitory.dormitoryName,
+                            idRoom = room.idRoom,
                             roomName = room.roomName
                         };
                     }
@@ -130,16 +151,50 @@ namespace DormitoryAPI.Services
             return null;
         }
 
+        public async Task<Dormitory> EditDormitory(DetailDormitory req,string idDormitory)
+        {
+            
+            var _dormitory = await _context.Dormitory.FirstOrDefaultAsync(d => d.idDormitory == idDormitory);
+            if(_dormitory != null)
+            {
+                
+                _dormitory.dormitoryName = req.dormitoryName;
+                _dormitory.address = req.address;
+                _dormitory.district = req.district;
+                _dormitory.province = req.province;
+                _dormitory.postalCode = req.postalCode;
+                _dormitory.phoneNumber = req.phoneNumber;
+                _dormitory.email = req.email;
+                await _context.SaveChangesAsync();
+                return _dormitory;
+            }
+                  
+            return null;
+        }
+
         public async Task<bool> DeleteDormitory(string idDormitory)
         {
             try
             {
                 var dormitory = await _context.Dormitory.FindAsync(idDormitory);
-
+                var buildings = await _context.Building.Where(b => b.idDormitory == dormitory.idDormitory).ToListAsync();
                 if (dormitory == null)
                 {
-                    // User not found
+                    
                     return false;
+                }
+                if(buildings != null)
+                {
+                    foreach(var building in buildings)
+                    {
+                        var rooms = await _context.Room.Where(b => b.idBuilding == building.idBuilding).ToListAsync();
+                        if(rooms != null)
+                        {
+                            _context.Room.RemoveRange(rooms);
+                            
+                        }
+                        _context.Building.Remove(building);
+                    }
                 }
 
                 _context.Dormitory.Remove(dormitory);
