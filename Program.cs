@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Npgsql.EntityFrameworkCore.PostgreSQL;
 using DormitoryAPI.EFcore;
+using Stripe;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -24,7 +26,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddDbContext<EF_DormitoryDb>(
     o => o.UseNpgsql(builder.Configuration.GetConnectionString("dormitorydb")) 
 );
+
+
 var app = builder.Build();
+
+StripeConfiguration.ApiKey = app.Configuration.GetSection("StripeSettings:SecretKey").Get<string>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

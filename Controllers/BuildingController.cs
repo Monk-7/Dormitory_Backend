@@ -25,6 +25,24 @@ namespace DormitoryAPI.Controllers
             
         }
 
+        [HttpGet("GetAllBuilding/{idDormitory}")]
+        public async Task<ActionResult<string>> GetAllBuildingByIdDormitory(string idDormitory)
+        {
+            
+            var data = await _db.GetAllBuildingByIdDormitory(idDormitory);
+            return Ok(data);
+            
+        }
+
+        [HttpGet("GetBuildingDetail/{idBuilding}")]
+        public async Task<ActionResult<string>> GetBuildingDetail(string idBuilding)
+        {
+            
+            var data = await _db.GetBuildingDetail(idBuilding);
+            return Ok(data);
+            
+        }
+
         [HttpPost("Post")]
 
         public async Task<ActionResult<string>> Post([FromBody]Building req)
@@ -43,13 +61,11 @@ namespace DormitoryAPI.Controllers
             
         }
 
-        [HttpGet("GetAllBuilding/{idDormitory}")]
-        public async Task<ActionResult<string>> GetAllBuildingByIdDormitory(string idDormitory)
+        [HttpPut("EdotBuildingDetail/{idBuilding}")]
+        public async Task<ActionResult<string>> EdotBuildingDetail([FromBody] BuildingDetail req,string idBuilding)
         {
-            
-            var data = await _db.GetAllBuildingByIdDormitory(idDormitory);
+            var data = await _db.EdotBuildingDetail(req,idBuilding);
             return Ok(data);
-            
         }
 
         [HttpDelete("DeleteBuilding/{idBuilding}")]

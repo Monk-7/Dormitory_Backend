@@ -18,7 +18,9 @@ namespace DormitoryAPI.Services
         {
 
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-            var filePath = Path.Combine(@"D:\CEPP\files\pdf", fileName);
+            var basePath = Directory.GetCurrentDirectory();
+            var fileDirectory = Path.Combine("files","pdf", fileName);
+            var filePath = Path.Combine(basePath,"files","pdf", fileName);
 
         // บันทึกไฟล์ลงในเครื่องเซิร์ฟเวอร์
             using (var stream = new FileStream(filePath, FileMode.Create))
@@ -28,7 +30,7 @@ namespace DormitoryAPI.Services
             var _contract = new Contract{
                 idContract = Guid.NewGuid().ToString(),
                 idRoom = idRoom,
-                pdfFileName = filePath,
+                pdfFileName = fileDirectory,
                 timesTamp = DateTimeOffset.UtcNow
             };
 
@@ -48,7 +50,8 @@ namespace DormitoryAPI.Services
                 
                 if (contract != null)
                 {
-                    if(!provider.TryGetContentType(contract.pdfFileName,out var _ContentType))
+                    var basePath = Directory.GetCurrentDirectory();
+                    if(!provider.TryGetContentType(Path.Combine(basePath,contract.pdfFileName),out var _ContentType))
                     {
                         _ContentType = "application/octet-stream";
                     }

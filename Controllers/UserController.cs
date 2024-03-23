@@ -53,6 +53,13 @@ namespace DormitoryAPI.Controllers
             var result = await _db.GetImg(idUser);
             return File(result.Item1, result.Item2, result.Item3);
         }
+        
+        [HttpGet("checkDorm/{idUser}")]
+        public async Task<ActionResult<string>> getCheckDorm(string idUser)
+        {
+            var data = await _db.getCheckDorm(idUser);
+            return Ok(data);
+        }
 
         [HttpGet("GetUser/{idUser}")]
         public async Task<ActionResult<string>> getUserById(string idUser)
@@ -60,6 +67,7 @@ namespace DormitoryAPI.Controllers
             var data = await _db.getUserById(idUser);
             return Ok(data);
         }
+        
         [HttpGet("GetUserAllByIdroom/{idRoom}")]
         public async Task<ActionResult<string>> getUsersByIdRoom(string idRoom)
         {
@@ -78,7 +86,7 @@ namespace DormitoryAPI.Controllers
             var _user = await _db.registerAsync(request);
             if (_user == null)
             {
-                return BadRequest(new { message = "มีชื่อผู้ใช้นี้อยู่แล้ว" });
+                return BadRequest(new { message = "This email is already in use. Please try again." });
             }
             return CreatedAtAction("register", new { user = _user, token = _user.token });
         }
@@ -103,6 +111,13 @@ namespace DormitoryAPI.Controllers
         {
             
             var data = await _db.updateIdRoom(res);
+            return Ok(data);
+        }
+        [HttpPut("EditProfile")]
+        public async Task<ActionResult<string>> EditProfile(EditProfile res)
+        {
+            var data = await _db.EditProfile(res);
+            if(data == null) return BadRequest(new { message = "Incorrect Password" });
             return Ok(data);
         }
         [HttpPut("UpdateImg/{idUser}")]

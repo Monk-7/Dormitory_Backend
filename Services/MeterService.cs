@@ -2,6 +2,7 @@
 using DormitoryAPI.EFcore;
 using DormitoryAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace DormitoryAPI.Services
 {
@@ -259,6 +260,119 @@ namespace DormitoryAPI.Services
 
             return _meter;
         }
+
+        public async Task<List<Meter>> GetMeter(string idUser)
+        {
+            var _meter = new List<Meter>();
+            var chackTimes = DateTimeOffset.UtcNow;
+            var dormitory = await _context.Dormitory.FirstOrDefaultAsync(u => u.idOwner == idUser);
+            var buildings = await _context.Building.Where(u => u.idDormitory == dormitory.idDormitory).ToListAsync();
+            var MeterAll = await _context.Meter.Include(m => m.meterRoomAll
+                .OrderBy(room => room.roomName))
+                .Where(u => u.idDormitory == dormitory.idDormitory && u.timesTamp.Value.Month == chackTimes.Month && u.timesTamp.Value.Year == chackTimes.Year).ToListAsync();
+            if (MeterAll == null) return null;    
+            foreach (var meter in MeterAll)
+            {
+                _meter.Add(meter);
+            }
+
+            return _meter;
+        }
+
+        public async Task<(byte[], string, string)> ExportFile(string idUser)
+        {
+            try
+            {
+                var meters = await GetMeter(idUser);
+                using (var package = new ExcelPackage())
+                {
+                    // เพิ่มชีทใหม่ในไฟล์ Excel
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Contract Details");
+
+                    worksheet.Cells["A1"].Value = "Dormitory Name";
+                    worksheet.Cells["B1"].Value = "Building Name";
+                    worksheet.Cells["C1"].Value = "Room Name";
+                    worksheet.Cells["D1"].Value = "Electricity";
+                    worksheet.Cells["E1"].Value = "Water";
+                    worksheet.Cells["F1"].Value = "RoomMeter ID";
+                    worksheet.Cells["G1"].Value = "Meter ID";
+                    // เขียนข้อมูลลงในเซลล์ตามแต่ละแถว
+                    int row = 2;
+                    foreach (var meter in meters)
+                    {
+                        foreach (var meterRoom in meter.meterRoomAll)
+                        {
+                            worksheet.Cells[row, 1].Value = meter.dormitoryName;
+                            worksheet.Cells[row, 2].Value = meter.buildingName;
+                            worksheet.Cells[row, 3].Value = meterRoom.roomName;
+                            worksheet.Cells[row, 4].Value = null;
+                            worksheet.Cells[row, 5].Value = null;
+                            worksheet.Cells[row, 6].Value = meterRoom.idMeterRoom;
+                            worksheet.Cells[row, 7].Value = meter.idMeter;
+                            row++;
+                        }
+                    }
+                    // เพิ่มข้อมูลอื่นๆตามต้องการ
+                    
+                    // บันทึกไฟล์ Excel เป็น byte array
+                    byte[] excelBytes = await package.GetAsByteArrayAsync();
+
+                    // คืนค่า byte array ของไฟล์ Excel พร้อม Content Type และชื่อไฟล์
+                    return (excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "export.xlsx");
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+                return (null, null, null);
+            }
+ 
+        }
+        public async Task<bool> UpdateAddFile(IFormFile file)
+        {
+            try
+            {
+                using (var stream = new MemoryStream())
+                {
+                    file.CopyTo(stream);
+                    stream.Position = 0; // ตั้งค่าตำแหน่งให้เป็น 0 เพื่ออ่านจากต้นไฟล์
+
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        var worksheet = package.Workbook.Worksheets.FirstOrDefault();
+
+                        // เริ่มต้นจากเซลล์ A2 เนื่องจากเซลล์ A1 ใช้เป็นหัวข้อ
+                        int row = 2;
+                        while (worksheet.Cells[row, 1].Value != null) // อ่านไปจนกว่าค่าในเซลล์ A จะเป็น null
+                        {
+                            string dormitoryName = worksheet.Cells[row, 1].Value.ToString();
+                            string buildingName = worksheet.Cells[row, 2].Value.ToString();
+                            string roomName = worksheet.Cells[row, 3].Value.ToString();
+                            string electricity = worksheet.Cells[row, 4].Value.ToString();
+                            string water = worksheet.Cells[row, 5].Value.ToString();
+                            string idMeterRoom = worksheet.Cells[row, 6].Value.ToString();
+                            string idMeter = worksheet.Cells[row, 7].Value.ToString();
+
+                            var meter = await _context.Meter.Include(m => m.meterRoomAll.OrderBy(room => room.roomName)).FirstOrDefaultAsync(u => u.idMeter == idMeter);
+                            var meterRoom = meter.meterRoomAll.FirstOrDefault(m => m.idMeterRoom == idMeterRoom);
+                            meterRoom.electricity = int.Parse(electricity);
+                            meterRoom.water = int.Parse(water);
+                            row++;
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
+
+            return true;
+        }
+
     }   
     
 }

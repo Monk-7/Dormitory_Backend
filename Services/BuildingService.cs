@@ -61,43 +61,6 @@ namespace DormitoryAPI.Services
             
             return _building;
         }
-        public async Task<Building> CreateBuildingAndAllRooms(CreateBuildingTEST building)
-        {
-            
-            var _building = new Building
-            {
-                idBuilding = Guid.NewGuid().ToString(),
-                idDormitory = building.idDormitory,
-                buildingName = building.buildingName,
-                waterPrice = building.waterPrice,
-                electricalPrice = building.electricalPrice,
-                timesTamp = DateTimeOffset.UtcNow
-            };
-
-            await _context.Building.AddAsync(_building);
-            await _context.SaveChangesAsync();  // บันทึกข้อมูลอาคารก่อน
-
-            int multiplier = (int)Math.Pow(10, building.buildingRoomNumberlength - 1);
-            
-            var rooms = Enumerable.Range(1, building.buildingFloor)
-            .SelectMany(floor => Enumerable.Range(1, building.buildingRoom)
-                .Select(roomNumber => new Room
-                    {
-                        idRoom = Guid.NewGuid().ToString(),
-                        idBuilding = _building.idBuilding.ToString(),
-                        roomName = (floor * multiplier) + roomNumber,
-                        roomPrice = building.roomPrice,
-                        furniturePrice = building.furniturePrice,
-                        internetPrice = building.internetPrice,
-                        parkingPrice = building.parkingPrice,
-                        timesTamp = DateTimeOffset.UtcNow
-                    }));
-
-            await _context.Room.AddRangeAsync(rooms);
-            await _context.SaveChangesAsync();  // บันทึกข้อมูลห้อง
-
-            return _building;
-        }
 
         public async Task<List<Building>> GetAllBuildingByIdDormitory(string idDormitory)
         {
@@ -105,6 +68,37 @@ namespace DormitoryAPI.Services
             if(buildings != null)
             {
                 return buildings;
+            }
+            return null;
+            
+        }
+
+        public async Task<BuildingDetail> GetBuildingDetail(string idBuilding)
+        {
+            var building = await _context.Building.FirstOrDefaultAsync(u => u.idBuilding == idBuilding);
+            if(building != null)
+            {
+                return new BuildingDetail{
+                    buildingName = building.buildingName,
+                    electricalPrice = building.electricalPrice,
+                    waterPrice = building.waterPrice,
+                };
+            }
+            return null;
+            
+        }
+
+        public async Task<Building> EdotBuildingDetail(BuildingDetail req,string idBuilding)
+        {
+            var building = await _context.Building.FirstOrDefaultAsync(u => u.idBuilding == idBuilding);
+            if(building != null)
+            {
+                building.buildingName = req.buildingName;
+                building.electricalPrice = req.electricalPrice;
+                building.waterPrice = req.waterPrice;
+                await _context.SaveChangesAsync();
+
+                return building;
             }
             return null;
             
@@ -118,7 +112,7 @@ namespace DormitoryAPI.Services
 
                 if (building == null)
                 {
-                    // User not found
+                    
                     return false;
                 }
 

@@ -51,6 +51,17 @@ namespace DormitoryAPI.Controllers
         //     var _invoice = await _db.CreateInvoice(idUser,_meter,dueDate);
         //     return Ok(_invoice);
         // }
-
+        [HttpPut("SendInvoice/{idUser}")]
+        public async Task<ActionResult<string>> SendInvoiceToUser(string idUser) 
+        {
+            var _invoice = await _db.SendInvoiceToUser(idUser);
+            return Ok(_invoice);
+        }
+        [HttpPut("Payment/{idInvoice}")]
+        public async Task<ActionResult<string>> updateInvoice(string idInvoice) 
+        {
+            var _invoice = await _db.updateInvoice(idInvoice);
+            return Ok(_invoice);
+        }
     }
 }

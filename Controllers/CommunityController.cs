@@ -56,6 +56,14 @@ namespace DormitoryAPI.Controllers
             return Ok(data);
             
         }
+        [HttpGet("GetPostAnnouncement/{idUser}")]
+        public async Task<ActionResult<string>> GetPostAnnouncement(string idUser)
+        {
+            
+            var data = await _db.GetAnnouncement(idUser);
+            return Ok(data);
+            
+        }
 
         [HttpPost("Post")]
         public async Task<ActionResult<string>> Post([FromBody]Community req)

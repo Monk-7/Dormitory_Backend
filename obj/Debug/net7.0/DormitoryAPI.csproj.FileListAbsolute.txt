@@ -86,3 +86,4 @@ D:\CEPP\DormitoryAPI\bin\Debug\net7.0\System.Security.Cryptography.Pkcs.dll
 D:\CEPP\DormitoryAPI\bin\Debug\net7.0\runtimes\win\lib\net7.0\Microsoft.Win32.SystemEvents.dll
 D:\CEPP\DormitoryAPI\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Drawing.Common.dll
 D:\CEPP\DormitoryAPI\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Security.Cryptography.Pkcs.dll
+D:\CEPP\DormitoryAPI\bin\Debug\net7.0\Stripe.net.dll

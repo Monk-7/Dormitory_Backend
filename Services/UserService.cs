@@ -213,17 +213,18 @@ namespace DormitoryAPI.Services
            var _user = await _context.User.FirstOrDefaultAsync(user => user.Id == idUser);
 
             if (_user != null)
-            {
-                
+            {   
                 var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                var filePath = Path.Combine(@"D:\CEPP\files\img", fileName);
+                var basePath = Directory.GetCurrentDirectory();
+                var fileDirectory = Path.Combine("files","img", fileName);
+                var filePath = Path.Combine(basePath,"files","img", fileName);
 
             // บันทึกไฟล์ลงในเครื่องเซิร์ฟเวอร์
                 using (var stream = new FileStream(filePath, FileMode.Create))
                 {
                     await file.CopyToAsync(stream);
                 }
-                _user.profile = filePath;
+                _user.profile = fileDirectory;
                 await _context.SaveChangesAsync();  // บันทึกข้อมูลห้อง
 
                 return true; 
@@ -231,8 +232,6 @@ namespace DormitoryAPI.Services
 
             return false; // If the user is not found
         }
-
-        
 
         public async Task<UserNoPW> getUserById(string userId)
         {
@@ -256,6 +255,30 @@ namespace DormitoryAPI.Services
             }
 
             return null;
+        }
+
+        public async Task<bool> getCheckDorm(string userId)
+        {
+            var user = await _context.User.FirstOrDefaultAsync(u => u.Id == userId);
+            if(user != null)
+            {
+                if(user.role == "owner")
+                {
+                    var dormitory = await _context.Dormitory.FirstOrDefaultAsync(d => d.idOwner == userId);
+                    if(dormitory != null) 
+                    {
+                        return true;
+                    }
+                }
+                else if(user.role == "renter")
+                {
+                    if (user.IdRoom != null)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public async Task<List<UserNoPW>> getUsersByRoomId(string idRoom)
@@ -282,6 +305,28 @@ namespace DormitoryAPI.Services
             return new List<UserNoPW>();
         }
 
+        public async Task<string> EditProfile(EditProfile req)
+        {
+            var _user = await _context.User.FirstOrDefaultAsync(u => u.Id == req.idUser);
+
+            if (_user != null)
+            {
+                if(verifyPassword(req.password, _user.passwordHash))
+                {
+                    _user.email = req.email;
+                    _user.name = req.name;
+                    _user.lastname = req.lastname;
+                    _user.phonenumber = req.phonenumber;
+                    string token = CreateToken(_user);
+                    _user.token = token;
+                    await _context.SaveChangesAsync();
+                    return token;
+                }
+                
+            }
+
+            return null;
+        }
         public async Task<bool> DeleteUser(string userId)
         {
             try
